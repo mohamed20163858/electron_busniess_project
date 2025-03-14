@@ -1,0 +1,33 @@
+{
+  "name": "electon_business_project",
+  "version": "1.0.0",
+  "description": "Electron desktop app for business analysis project in Arabic",
+  "license": "ISC",
+  "author": "mohamed saleh",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.businessanalysis",
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^35.0.1",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.14"
+  }
+}

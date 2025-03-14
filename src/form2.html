@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>قائمة الدخل</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .button-container {
+        margin-top: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>قائمة الدخل</h1>
+    <form id="form2">
+      <label for="field1">الحقل 1:</label>
+      <input type="text" id="field1" name="field1" /><br /><br />
+      <label for="field2">الحقل 2:</label>
+      <input type="text" id="field2" name="field2" /><br /><br />
+    </form>
+    <div class="button-container">
+      <button onclick="location.href='index.html'">العودة للرئيسية</button>
+      <button onclick="resetForm()">إعادة تعيين</button>
+      <button onclick="saveForm()">حفظ</button>
+    </div>
+
+    <script>
+      function resetForm() {
+        document.getElementById("form2").reset();
+      }
+      function saveForm() {
+        alert("تم حفظ البيانات.");
+      }
+    </script>
+  </body>
+</html>

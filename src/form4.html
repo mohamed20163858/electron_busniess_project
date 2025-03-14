@@ -2,43 +2,261 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <title>توليد تقارير</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-      }
-      .button-container {
-        margin-top: 20px;
-      }
-      button {
-        padding: 10px 20px;
-        margin: 5px;
-        font-size: 14px;
-      }
-    </style>
+    <title>تقرير النسب المالية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <h1>توليد تقارير</h1>
-    <form id="form4">
-      <label for="field1">الحقل 1:</label>
-      <input type="text" id="field1" name="field1" /><br /><br />
-      <label for="field2">الحقل 2:</label>
-      <input type="text" id="field2" name="field2" /><br /><br />
-    </form>
-    <div class="button-container">
-      <button onclick="location.href='index.html'">العودة للرئيسية</button>
-      <button onclick="resetForm()">إعادة تعيين</button>
-      <button onclick="saveForm()">حفظ</button>
+  <body class="p-4">
+    <h1 class="text-2xl font-bold text-center mb-4">تقرير النسب المالية</h1>
+    <div class="space-y-4 mb-4">
+      <div>
+        <label class="block mb-1">السنة:</label>
+        <select id="year-select" class="w-full p-2 border rounded">
+          <option value="">اختر السنة</option>
+        </select>
+      </div>
+      <div>
+        <label class="block mb-1">اسم الشركة:</label>
+        <input
+          id="company-input"
+          type="text"
+          list="companies"
+          class="w-full p-2 border rounded"
+        />
+        <datalist id="companies"></datalist>
+      </div>
     </div>
+    <div class="flex justify-center gap-2 mb-4">
+      <button
+        id="generate-btn"
+        class="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        توليد التقرير
+      </button>
+      <button id="back-btn" class="bg-gray-300 px-4 py-2 rounded">
+        الرجوع للخلف
+      </button>
+    </div>
+    <div id="report-table-container"></div>
 
     <script>
-      function resetForm() {
-        document.getElementById("form4").reset();
-      }
-      function saveForm() {
-        alert("تم حفظ البيانات.");
-      }
+      document.addEventListener("DOMContentLoaded", function () {
+        // Local state variables
+        let year = "";
+        let yearFetched = "";
+        let company = "";
+        let reportCurrent = null;
+        let reportPrevious = null;
+        let companySuggestions = [];
+
+        // Dummy comments object – replace or extend as needed
+        const comments = {
+          // Default comment functions for demonstration
+          default: {
+            greater: (cur, prev, yr) => "تحسن عن السنة السابقة",
+            less: (cur, prev, yr) => "تراجع عن السنة السابقة",
+            equals: "ثابت",
+          },
+          // You can add specific keys with custom functions if needed.
+        };
+
+        // Cache DOM elements
+        const yearSelect = document.getElementById("year-select");
+        const companyInput = document.getElementById("company-input");
+        const companiesDatalist = document.getElementById("companies");
+        const generateBtn = document.getElementById("generate-btn");
+        const backBtn = document.getElementById("back-btn");
+        const reportTableContainer = document.getElementById(
+          "report-table-container"
+        );
+
+        // Populate year select with the last 150 years
+        const currentYear = new Date().getFullYear();
+        for (let i = 0; i < 150; i++) {
+          const y = currentYear - i;
+          const option = document.createElement("option");
+          option.value = y;
+          option.textContent = y;
+          yearSelect.appendChild(option);
+        }
+
+        // Fetch company suggestions for autocomplete
+        function fetchCompanies() {
+          fetch("/api/companies")
+            .then((response) => (response.ok ? response.json() : []))
+            .then((data) => {
+              companySuggestions = data;
+              companiesDatalist.innerHTML = "";
+              data.forEach((c) => {
+                const option = document.createElement("option");
+                option.value = c;
+                companiesDatalist.appendChild(option);
+              });
+            })
+            .catch((err) => console.error("Error fetching companies:", err));
+        }
+        fetchCompanies();
+
+        // Update local state from inputs
+        yearSelect.addEventListener("change", function (e) {
+          year = e.target.value;
+        });
+        companyInput.addEventListener("input", function (e) {
+          company = e.target.value;
+        });
+
+        // Format ratio values based on the label
+        function getFormattedValue(ratio) {
+          if (!ratio) return "-";
+          if (
+            ratio.label.startsWith("نسبة") ||
+            ratio.label.startsWith("السيولة") ||
+            ratio.label.includes("العائد")
+          ) {
+            return (ratio.value * 100).toFixed(1) + "%";
+          } else if (
+            ratio.label.includes("فتره") ||
+            ratio.label.includes("الدورة")
+          ) {
+            return ratio.value + " يوم";
+          } else {
+            return ratio.value.toFixed(2);
+          }
+        }
+
+        // Generate comment based on current and previous values
+        function generateComment(currentValue, previousValue, key) {
+          if (currentValue === undefined || previousValue === undefined) {
+            return "";
+          } else if (currentValue > previousValue) {
+            const comment =
+              (comments[key] && comments[key].greater) ||
+              comments.default.greater;
+            return typeof comment === "function"
+              ? comment(currentValue, previousValue, Number(yearFetched))
+              : comment;
+          } else if (currentValue < previousValue) {
+            const comment =
+              (comments[key] && comments[key].less) || comments.default.less;
+            return typeof comment === "function"
+              ? comment(currentValue, previousValue, Number(yearFetched))
+              : comment;
+          } else {
+            return (
+              (comments[key] && comments[key].equals) || comments.default.equals
+            );
+          }
+        }
+
+        // Get the union of ratio keys from both reports
+        function getRatioKeys() {
+          const keysCurrent = reportCurrent
+            ? Object.keys(reportCurrent.ratios)
+            : [];
+          const keysPrevious = reportPrevious
+            ? Object.keys(reportPrevious.ratios)
+            : [];
+          return Array.from(new Set([...keysCurrent, ...keysPrevious]));
+        }
+
+        // Render the report table if data is available
+        function renderReportTable() {
+          if (!reportCurrent && !reportPrevious) {
+            reportTableContainer.innerHTML = "";
+            return;
+          }
+          let html = `
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-collapse">
+              <thead>
+                <tr>
+                  <th class="border px-4 py-2 text-right">الوصف</th>
+                  <th class="border px-4 py-2 text-right">النتيجة للسنة ${yearFetched}</th>
+                  <th class="border px-4 py-2 text-right">النتيجة للسنة ${
+                    Number(yearFetched) - 1
+                  }</th>
+                  <th class="border px-4 py-2 text-right">التعليق</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+          const ratioKeys = getRatioKeys();
+          ratioKeys.forEach((ratioKey) => {
+            const ratioCurrent = reportCurrent
+              ? reportCurrent.ratios[ratioKey]
+              : null;
+            const ratioPrevious = reportPrevious
+              ? reportPrevious.ratios[ratioKey]
+              : null;
+            html += `
+            <tr>
+              <td class="border px-4 py-2">${
+                (ratioCurrent && ratioCurrent.label) ||
+                (ratioPrevious && ratioPrevious.label) ||
+                ratioKey
+              }</td>
+              <td class="border px-4 py-2 text-right">${getFormattedValue(
+                ratioCurrent
+              )}</td>
+              <td class="border px-4 py-2 text-right">${getFormattedValue(
+                ratioPrevious
+              )}</td>
+              <td class="border px-4 py-2 text-right">${generateComment(
+                ratioCurrent ? ratioCurrent.value : undefined,
+                ratioPrevious ? ratioPrevious.value : undefined,
+                ratioKey
+              )}</td>
+            </tr>
+          `;
+          });
+          html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+          reportTableContainer.innerHTML = html;
+        }
+
+        // Handle generating the report
+        generateBtn.addEventListener("click", async function () {
+          if (!year || !company) {
+            alert("يرجى اختيار السنة واسم الشركة.");
+            return;
+          }
+          // Helper function to fetch report data
+          async function fetchReport(reportYear) {
+            const res = await fetch("/api/generate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ year: reportYear, company }),
+            });
+            return res.ok ? res.json() : null;
+          }
+          // Fetch current year report
+          const dataCurrent = await fetchReport(year);
+          if (dataCurrent && dataCurrent.success) {
+            reportCurrent = dataCurrent.report;
+            yearFetched = year;
+          } else {
+            alert("خطأ في جلب التقرير للسنة المحددة.");
+            return;
+          }
+          // Fetch previous year report
+          const previousYear = String(Number(year) - 1);
+          const dataPrevious = await fetchReport(previousYear);
+          if (dataPrevious && dataPrevious.success) {
+            reportPrevious = dataPrevious.report;
+          } else {
+            alert("خطأ في جلب تقرير السنة السابقة.");
+          }
+          renderReportTable();
+        });
+
+        // Back button navigates to the main view (index.html)
+        backBtn.addEventListener("click", function () {
+          window.location.href = "index.html";
+        });
+      });
     </script>
   </body>
 </html>

@@ -1,7 +1,8 @@
+// main.js
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
-// Import the Express server so it starts with the app.
+// Start the internal API server
 require("./api/server.js");
 
 function createWindow() {
@@ -9,8 +10,11 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true, // Note: consider security implications for production
-      contextIsolation: false,
+      // In production, consider disabling nodeIntegration and using preload scripts
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: false,
     },
   });
   mainWindow.loadFile(path.join(__dirname, "src", "index.html"));

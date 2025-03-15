@@ -131,7 +131,7 @@
 
         // Fetch company suggestions for autocomplete
         function fetchCompanies() {
-          fetch("/api/companies")
+          fetch("http://localhost:3000/api/companies")
             .then((response) => (response.ok ? response.json() : []))
             .then((data) => {
               state.companySuggestions = data;
@@ -213,7 +213,7 @@
         // When year or company changes, fetch existing record
         function fetchFormData() {
           if (state.year && state.company) {
-            const query = `/api/forms/balance-sheet/get?year=${
+            const query = `http://localhost:3000/api/forms/balance-sheet/get?year=${
               state.year
             }&company=${encodeURIComponent(state.company)}`;
             fetch(query)
@@ -282,7 +282,7 @@
               custom: state.customFields,
             }),
           };
-          fetch("/api/forms/balance-sheet/save", {
+          fetch("http://localhost:3000/api/forms/balance-sheet/save", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -295,7 +295,7 @@
 
         // Handle reset
         resetBtn.addEventListener("click", function () {
-          fetch("/api/forms/balance-sheet/reset", {
+          fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ year: state.year, company: state.company }),

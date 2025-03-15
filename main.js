@@ -1,26 +1,23 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
+// Import the Express server so it starts with the app.
+require("./api/server.js");
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true, // For simplicity; consider security implications in production
+      nodeIntegration: true, // Note: consider security implications for production
       contextIsolation: false,
     },
   });
   mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
 }
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(createWindow);
 
-  app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on("window-all-closed", function () {
+app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

@@ -49,16 +49,7 @@
         let reportPrevious = null;
         let companySuggestions = [];
 
-        // Dummy comments object – replace or extend as needed
-        const comments = {
-          // Default comment functions for demonstration
-          default: {
-            greater: (cur, prev, yr) => "تحسن عن السنة السابقة",
-            less: (cur, prev, yr) => "تراجع عن السنة السابقة",
-            equals: "ثابت",
-          },
-          // You can add specific keys with custom functions if needed.
-        };
+        const { comments } = require("../lib/comments.js");
 
         // Cache DOM elements
         const yearSelect = document.getElementById("year-select");
@@ -82,7 +73,7 @@
 
         // Fetch company suggestions for autocomplete
         function fetchCompanies() {
-          fetch("/api/companies")
+          fetch("http://localhost:3000/api/companies")
             .then((response) => (response.ok ? response.json() : []))
             .then((data) => {
               companySuggestions = data;
@@ -225,7 +216,7 @@
           }
           // Helper function to fetch report data
           async function fetchReport(reportYear) {
-            const res = await fetch("/api/generate", {
+            const res = await fetch("http://localhost:3000/api/generate", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ year: reportYear, company }),

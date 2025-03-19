@@ -76,19 +76,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (currentValue === undefined || previousValue === undefined) {
       return "";
     } else if (currentValue > previousValue) {
-      const comment =
-        (comments[key] && comments[key].greater) || comments.default.greater;
+      const comment = comments[key] && comments[key].greater;
       return typeof comment === "function"
         ? comment(currentValue, previousValue, Number(yearFetched))
         : comment;
     } else if (currentValue < previousValue) {
-      const comment =
-        (comments[key] && comments[key].less) || comments.default.less;
+      const comment = comments[key] && comments[key].less;
       return typeof comment === "function"
         ? comment(currentValue, previousValue, Number(yearFetched))
         : comment;
     } else {
-      return (comments[key] && comments[key].equals) || comments.default.equals;
+      return comments[key] && comments[key].equals;
     }
   }
 

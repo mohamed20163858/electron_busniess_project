@@ -59,8 +59,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function getFormattedValue(ratio) {
     if (!ratio) return "-";
     if (
+      ratio.label.includes("السيولة") ||
+      ratio.label.includes("نسبة التداول")
+    ) {
+      return ratio.value.toFixed(1);
+    } else if (
       ratio.label.startsWith("نسبة") ||
-      ratio.label.startsWith("السيولة") ||
       ratio.label.includes("العائد")
     ) {
       return (ratio.value * 100).toFixed(1) + "%";

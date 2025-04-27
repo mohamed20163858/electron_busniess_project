@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
+    "dev": "electronmon . --restart a.js,*.html,*.css,*.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -23,7 +24,8 @@
   },
   "devDependencies": {
     "electron": "^35.0.1",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "electronmon": "^2.0.3"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",

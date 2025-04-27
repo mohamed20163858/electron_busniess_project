@@ -17,7 +17,7 @@ function createWindow() {
       sandbox: false,
     },
   });
-  mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
+  mainWindow.loadFile(path.join(__dirname, "src", "splash.html"));
 }
 
 app.whenReady().then(createWindow);

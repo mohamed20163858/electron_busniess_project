@@ -11,6 +11,8 @@
     "start": "electron .",
     "dev": "electronmon . --restart a.js,*.html,*.css,*.js",
     "pack": "electron-builder --dir",
+    "build:css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/tailwind.css",
+    "watch:css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/tailwind.css --watch",
     "dist": "electron-builder"
   },
   "build": {
@@ -28,12 +30,11 @@
     "electronmon": "^2.0.3"
   },
   "dependencies": {
-    "autoprefixer": "^10.4.21",
+    "@tailwindcss/cli": "^4.1.5",
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
-    "postcss": "^8.5.3",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
-    "tailwindcss": "^4.0.14"
+    "tailwindcss": "^4.1.5"
   }
 }

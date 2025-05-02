@@ -1,20 +1,64 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+          default-src 'self';
+          script-src 'self';
+          style-src 'self';
+          img-src 'self' data:;
+          connect-src 'self';
+        "
+    />
     <title>تحليل الأعمال</title>
-    <link rel="stylesheet" href="css/styles.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./css/tailwind.css" rel="stylesheet" />
   </head>
-  <body class="bg-gray-100">
-    <div class="p-4 text-center">
-      <h1 class="text-3xl font-bold mb-6">تطبيق الأعمال</h1>
-      <a
-        href="index.html"
-        class="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded mb-4"
+  <body class="font-serif">
+    <div
+      id="page1"
+      class="hidden h-screen bg-cover bg-center bg-[url('../../assests/splash.jpg')] pt-[30px] pl-[40px]"
+    >
+      <h1
+        class="font-semibold text-[white] text-[32px] leading-[24px] mb-[40px]"
       >
-        القائمة الرئيسية
-      </a>
+        Fin Analyzer
+      </h1>
+      <p
+        class="font-[Poppins] font-normal text-[black] text-[24px] leading-[18px]"
+      >
+        An electronic tool that analyzes data and financial statements.
+      </p>
     </div>
+    <div
+      id="page2"
+      class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center"
+    >
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[80%] flex flex-col items-center justify-center"
+      >
+        <a
+          href="companyData.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[32px] leading-[24px] p-4 text-center mb-[30px]"
+        >
+          Company Data
+        </a>
+        <a
+          href="form1.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[32px] leading-[24px] p-4 text-center mb-[30px]"
+        >
+          Data Entry
+        </a>
+        <a
+          href="form1.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[32px] leading-[24px] p-4 text-center mb-[30px]"
+        >
+          Reoport
+        </a>
+      </div>
+    </div>
+    <!-- <script src="./scripts/splash.js"></script> -->
   </body>
 </html>

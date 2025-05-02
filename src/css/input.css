@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@theme {
+  --color-transparent-red: rgba(201, 43, 44, 0.4);
+}

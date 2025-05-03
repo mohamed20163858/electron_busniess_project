@@ -21,7 +21,7 @@
       class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center gap-4"
     >
       <div
-        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center justify-center"
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center min-h-[400px] justify-center"
       >
         <a
           href="companyData.html"
@@ -30,21 +30,74 @@
           Company Data
         </a>
         <a
-          href="form1.html"
+          href="dataEntry.html"
           class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[20px] leading-[30px] p-4 text-center mb-[30px]"
         >
           Data Entry
         </a>
         <a
-          href="form1.html"
+          href="form4.html"
           class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[20px] leading-[30px] p-4 text-center mb-[30px]"
         >
           Reoport
         </a>
       </div>
       <div
-        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] flex flex-col items-center justify-center"
-      ></div>
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] min-h-[400px]"
+      >
+        <h1 class="text-2xl font-bold mb-4">Company Data</h1>
+        <form id="comparison-form" class="space-y-4" onsubmit="return false;">
+          <!-- Company Name -->
+          <div class="flex items-center justify-between">
+            <label class="block mb-1 w-[30%]">Company Name</label>
+            <input
+              type="text"
+              id="company"
+              class="p-2 border rounded w-[60%]"
+              required
+            />
+          </div>
+
+          <!-- Base Year -->
+          <div class="flex items-center justify-between">
+            <label class="block mb-1 w-[30%]">Base year</label>
+            <input
+              type="number"
+              id="baseYear"
+              class="w-[60%] p-2 border rounded"
+              required
+            />
+          </div>
+
+          <!-- Comparison Year -->
+          <div class="flex items-center justify-between">
+            <label class="w-[30%] block mb-1">Comparison Year</label>
+            <input
+              type="number"
+              id="comparisonYear"
+              class="w-[60%] p-2 border rounded"
+              required
+            />
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex justify-center mt-[40px] space-x-4">
+            <button
+              id="save-btn"
+              class="bg-green-500 text-white px-4 py-2 rounded cursor-pointer"
+            >
+              Save
+            </button>
+            <button
+              id="reset-btn"
+              class="bg-red-500 text-white px-4 py-2 rounded cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+    <script src="./scripts/companyData.js"></script>
   </body>
 </html>

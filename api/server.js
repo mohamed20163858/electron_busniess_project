@@ -1,4 +1,4 @@
-// server.js
+// api/server.js
 const express = require("express");
 const bodyParser = require("body-parser");
 const {
@@ -30,9 +30,14 @@ app.get("/api/companies", async (req, res) => {
 app.get("/api/forms/:form/get", async (req, res) => {
   try {
     const { form } = req.params;
-    const { year, company } = req.query;
-    const data = await getFormDataByYearAndCompany(form, year, company);
-    res.json(data);
+    const { baseYear, comparisonYear, company } = req.query;
+    const data = await getFormDataByYearAndCompany(
+      form,
+      baseYear,
+      comparisonYear,
+      company
+    );
+    res.json({ data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -53,8 +58,8 @@ app.post("/api/forms/:form/save", async (req, res) => {
 app.post("/api/forms/:form/reset", async (req, res) => {
   try {
     const { form } = req.params;
-    const { year, company } = req.body;
-    await resetFormData(form, year, company);
+    const { baseYear, comparisonYear, company } = req.body;
+    await resetFormData(form, baseYear, comparisonYear, company);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -64,8 +69,8 @@ app.post("/api/forms/:form/reset", async (req, res) => {
 // Endpoint to generate a report
 app.post("/api/generate", async (req, res) => {
   try {
-    const { year, company } = req.body;
-    const report = await generateReport(year, company);
+    const { baseYear, comparisonYear, company } = req.body;
+    const report = await generateReport(baseYear, comparisonYear, company);
     res.json({ success: true, report });
   } catch (err) {
     res.status(500).json({ error: err.message });

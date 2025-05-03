@@ -2,29 +2,61 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <title>تقرير النسب المالية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="
-          default-src 'self';
-          script-src 'self';
-          style-src 'self';
-          connect-src 'self' http://localhost:3000;
-        "
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://localhost:3000"
     />
+    <title>تقرير النسب المالية</title>
     <link href="./css/tailwind.css" rel="stylesheet" />
   </head>
-  <body class="p-4">
-    <h1 class="text-2xl font-bold text-center mb-4">تقرير النسب المالية</h1>
+  <body class="font-serif">
+    <div
+      class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center gap-4"
+    >
+      <!-- Left panel: Report -->
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] h-[400px] overflow-y-auto flex flex-col items-center justify-start"
+      >
+        <h1
+          class="bg-white text-black rounded-[5px] font-normal w-[50%] text-[40px] leading-[50px] p-4 text-center mb-[30px]"
+        >
+          تقرير النسب المالية
+        </h1>
 
-    <div class="flex justify-center gap-4 mb-4">
-      <!-- Generate button removed -->
-      <button id="back-btn" class="bg-gray-300 px-4 py-2 rounded">
-        الرجوع للخلف
-      </button>
+        <div id="report-table-container" class="w-[90%]"></div>
+
+        <div class="flex justify-center space-x-4 mt-4">
+          <button id="back-btn" class="bg-gray-300 px-4 py-2 rounded">
+            الرجوع
+          </button>
+        </div>
+      </div>
+
+      <!-- Right panel: Navigation -->
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center min-h-[400px] justify-center"
+      >
+        <a
+          href="companyData.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+        >
+          Company Data
+        </a>
+        <a
+          href="dataEntry.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+        >
+          Data Entry
+        </a>
+        <a
+          href="form4.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+        >
+          Reoport
+        </a>
+      </div>
     </div>
-
-    <div id="report-table-container"></div>
 
     <script src="./scripts/report.js"></script>
   </body>

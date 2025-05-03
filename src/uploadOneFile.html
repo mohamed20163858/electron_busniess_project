@@ -7,12 +7,12 @@
     <meta
       http-equiv="Content-Security-Policy"
       content="
-          default-src 'self';
-          script-src 'self';
-          style-src 'self';
-          img-src 'self' data:;
-          connect-src 'self';
-        "
+      default-src 'self';
+      script-src 'self';
+      style-src 'self';
+      img-src 'self' data:;
+      connect-src 'self' http://localhost:3000;
+    "
     />
     <title>قائمة ادخال البيانات</title>
     <link href="./css/tailwind.css" rel="stylesheet" />
@@ -51,8 +51,22 @@
         >
           Excel
         </h1>
-        <!-- upload logic placeholder -->
+        <!-- File input -->
+        <input type="file" id="excel-file" accept=".xls,.xlsx" class="mb-4" />
+
+        <!-- Upload button -->
+        <button
+          id="upload-btn"
+          class="bg-green-500 text-white px-6 py-2 rounded mb-4"
+        >
+          رفع ومعالجة
+        </button>
+
+        <!-- Status message -->
+        <div id="status" class="text-center text-gray-700"></div>
       </div>
     </div>
+    <script src="../lib/read-excel-file.min.js"></script>
+    <script src="./scripts/uploadOneFile.js"></script>
   </body>
 </html>

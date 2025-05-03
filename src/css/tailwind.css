@@ -184,6 +184,9 @@
   .static {
     position: static;
   }
+  .row-1 {
+    grid-row: 1;
+  }
   .container {
     width: 100%;
     @media (width >= 40rem) {
@@ -243,6 +246,9 @@
   }
   .hidden {
     display: none;
+  }
+  .inline {
+    display: inline;
   }
   .table {
     display: table;
@@ -485,6 +491,9 @@
   }
   .text-black {
     color: var(--color-black);
+  }
+  .text-gray-700 {
+    color: var(--color-gray-700);
   }
   .text-red-500 {
     color: var(--color-red-500);

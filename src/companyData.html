@@ -10,7 +10,7 @@
           script-src 'self';
           style-src 'self';
           img-src 'self' data:;
-          connect-src 'self';
+          connect-src 'self' http://localhost:3000;
         "
     />
     <title>بيانات الشركة</title>
@@ -46,16 +46,18 @@
         class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] min-h-[400px]"
       >
         <h1 class="text-2xl font-bold mb-4">Company Data</h1>
-        <form id="comparison-form" class="space-y-4" onsubmit="return false;">
+        <div id="comparison-form" class="space-y-4">
           <!-- Company Name -->
           <div class="flex items-center justify-between">
             <label class="block mb-1 w-[30%]">Company Name</label>
             <input
+              id="company-input"
               type="text"
-              id="company"
+              list="companies"
               class="p-2 border rounded w-[60%]"
               required
             />
+            <datalist id="companies"></datalist>
           </div>
 
           <!-- Base Year -->
@@ -95,7 +97,7 @@
               Reset
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
     <script src="./scripts/companyData.js"></script>

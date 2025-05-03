@@ -1,5 +1,5 @@
 // main.js
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 
 // Start the internal API server
@@ -10,12 +10,10 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      // In production, consider disabling nodeIntegration and using preload scripts
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false, // disables the remote module
-
+      enableRemoteModule: false,
       sandbox: false,
     },
   });
@@ -23,6 +21,17 @@ function createWindow() {
 }
 
 app.whenReady().then(createWindow);
+
+// IPC handler for showing a message box
+ipcMain.handle("show-message", async (event, { message, title = "Info" }) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  await dialog.showMessageBox(win, {
+    type: "info",
+    title,
+    message,
+    buttons: ["OK"],
+  });
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

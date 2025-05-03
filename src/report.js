@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Handle generating the report
   generateBtn.addEventListener("click", async function () {
     if (!year || !company) {
-      alert("يرجى اختيار السنة واسم الشركة.");
+      window.electronAPI.showMessage("يرجى اختيار السنة واسم الشركة.", "خطأ");
       return;
     }
     // Helper function to fetch report data
@@ -182,7 +182,10 @@ document.addEventListener("DOMContentLoaded", function () {
       reportCurrent = dataCurrent.report;
       yearFetched = year;
     } else {
-      alert("خطأ في جلب التقرير للسنة المحددة.");
+      window.electronAPI.showMessage(
+        "خطأ في جلب التقرير للسنة المحددة.",
+        "خطأ"
+      );
       return;
     }
     // Fetch previous year report
@@ -191,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (dataPrevious && dataPrevious.success) {
       reportPrevious = dataPrevious.report;
     } else {
-      alert("خطأ في جلب تقرير السنة السابقة.");
+      window.electronAPI.showMessage("خطأ في جلب تقرير السنة السابقة.", "خطأ");
     }
     renderReportTable();
   });

@@ -280,7 +280,8 @@
             body: JSON.stringify(payload),
           })
             .then((response) => {
-              if (response.ok) alert("تم الحفظ");
+              if (response.ok) window.electronAPI.showMessage("تم الحفظ", "تم");
+              else window.electronAPI.showMessage("فشل الحفظ", "خطأ");
             })
             .catch((err) => console.error("Error saving data:", err));
         });
@@ -304,7 +305,7 @@
                 state.customFields = [];
                 renderStaticFields();
                 renderCustomFields();
-                alert("تم إعادة الضبط");
+                window.electronAPI.showMessage("تم إعادة الضبط", "تم");
               }
             })
             .catch((err) => console.error("Error resetting data:", err));

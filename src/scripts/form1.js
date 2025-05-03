@@ -10,11 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!settings) return (window.location.href = "comparison-settings.html");
   const { company, baseYear, comparisonYear } = settings;
 
-  // 3) Update header
-  document.getElementById("col-header").textContent =
-    mode === "base" ? baseYear : comparisonYear;
+  // 3) Compute the single year for this form
+  const year = mode === "base" ? baseYear : comparisonYear;
 
-  // 4) Define static fields
+  // 4) Update header
+  document.getElementById("col-header").textContent = year;
+
+  // 5) Define static fields
   const staticFields = {
     totalAssets: "اجمالي الأصول",
     totalDebits: "اجمالي الالتزمات",
@@ -27,19 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
     creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
   };
 
-  // 5) Initialize state
+  // 6) Initialize state
   const state = {
-    staticBase: {},
-    staticComp: {},
-    customBase: [],
-    customComp: [],
+    staticValue: {},
+    customFields: [],
   };
-  Object.keys(staticFields).forEach((key) => {
-    state.staticBase[key] = "";
-    state.staticComp[key] = "";
-  });
+  Object.keys(staticFields).forEach((k) => (state.staticValue[k] = ""));
 
-  // 6) Cache DOM
+  // 7) Cache DOM elements
   const staticTbody = document.getElementById("static-fields-container");
   const customDiv = document.getElementById("custom-fields-container");
   const newLabelIn = document.getElementById("new-custom-label");
@@ -50,61 +47,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => history.back());
 
-  // 7) Render static
+  // 8) Render static fields
   function renderStatic() {
     staticTbody.innerHTML = "";
     Object.entries(staticFields).forEach(([key, label]) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="border p-2">${label}</td>
-        <td class="border p-2">
-          <input type="text" class="w-full p-1 border rounded"
-                 value="${
-                   mode === "base"
-                     ? state.staticBase[key]
-                     : state.staticComp[key]
-                 }">
-        </td>`;
+          <td class="border p-2">${label}</td>
+          <td class="border p-2">
+            <input 
+              type="text" 
+              class="w-full p-1 border rounded"
+              value="${state.staticValue[key] || ""}"
+            >
+          </td>`;
       tr.querySelector("input").addEventListener("input", (e) => {
-        if (mode === "base") state.staticBase[key] = e.target.value;
-        else state.staticComp[key] = e.target.value;
+        state.staticValue[key] = e.target.value;
       });
       staticTbody.appendChild(tr);
     });
   }
 
-  // 8) Render custom
+  // 9) Render custom fields
   function renderCustom() {
     customDiv.innerHTML = "";
-    const arr = mode === "base" ? state.customBase : state.customComp;
-    arr.forEach((field, i) => {
-      const w = document.createElement("div");
-      w.className = "mb-3";
-      w.innerHTML = `
-        <div class="font-medium mb-1">${field.label}</div>
-        <input type="text" class="w-full p-2 border rounded" value="${field.value}">`;
-      w.querySelector("input").addEventListener("input", (e) => {
-        arr[i].value = e.target.value;
+    state.customFields.forEach((field, i) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "mb-3";
+      wrapper.innerHTML = `
+          <div class="font-medium mb-1">${field.label}</div>
+          <input 
+            type="text" 
+            class="w-full p-2 border rounded"
+            value="${field.value || ""}"
+          >`;
+      wrapper.querySelector("input").addEventListener("input", (e) => {
+        state.customFields[i].value = e.target.value;
       });
-      customDiv.appendChild(w);
+      customDiv.appendChild(wrapper);
     });
   }
 
-  // 9) Fetch data (use HTTP URL)
+  // 10) Fetch existing data for company+year
   (async () => {
     try {
       const res = await fetch(
         `http://localhost:3000/api/forms/balance-sheet/get?company=${encodeURIComponent(
           company
-        )}&baseYear=${baseYear}&comparisonYear=${comparisonYear}`
+        )}&year=${year}`
       );
       const { data } = await res.json();
       if (data) {
-        const p = JSON.parse(data);
-        state.staticBase = p.staticBase || state.staticBase;
-        state.staticComp = p.staticComp || state.staticComp;
-        state.customBase = p.customBase || [];
-        state.customComp = p.customComp || [];
+        const parsed = JSON.parse(data);
+        state.staticValue = parsed.static || state.staticValue;
+        state.customFields = parsed.custom || [];
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -113,50 +109,57 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCustom();
   })();
 
-  // 10) Add custom
+  // 11) Add a new custom field
   addCustomBtn.addEventListener("click", () => {
     const label = newLabelIn.value.trim();
     if (!label) return;
-    state.customBase.push({ label, value: "" });
-    state.customComp.push({ label, value: "" });
+    state.customFields.push({ label, value: "" });
     newLabelIn.value = "";
     renderCustom();
   });
 
-  // 11) Save
+  // 12) Save (company + year)
   saveBtn.addEventListener("click", async () => {
-    await fetch("http://localhost:3000/api/forms/balance-sheet/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        company,
-        baseYear,
-        comparisonYear,
-        data: JSON.stringify({
-          staticBase: state.staticBase,
-          staticComp: state.staticComp,
-          customBase: state.customBase,
-          customComp: state.customComp,
-        }),
+    const payload = {
+      company,
+      year,
+      data: JSON.stringify({
+        static: state.staticValue,
+        custom: state.customFields,
       }),
-    });
-    alert("تم الحفظ");
+    };
+    try {
+      await fetch("http://localhost:3000/api/forms/balance-sheet/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      window.electronAPI.showMessage("تم الحفظ", "نجاح");
+    } catch (err) {
+      console.error("Save error:", err);
+      window.electronAPI.showMessage("حدث خطأ أثناء الحفظ", "خطأ");
+    }
   });
 
-  // 12) Reset
+  // 13) Reset (company + year)
   resetBtn.addEventListener("click", async () => {
-    await fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ company, baseYear, comparisonYear }),
-    });
-    // clear state
-    Object.keys(state.staticBase).forEach((k) => (state.staticBase[k] = ""));
-    Object.keys(state.staticComp).forEach((k) => (state.staticComp[k] = ""));
-    state.customBase = [];
-    state.customComp = [];
-    renderStatic();
-    renderCustom();
-    alert("تم إعادة الضبط");
+    try {
+      await fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company, year }),
+      });
+      // clear and re-render
+      Object.keys(state.staticValue).forEach(
+        (k) => (state.staticValue[k] = "")
+      );
+      state.customFields = [];
+      renderStatic();
+      renderCustom();
+      window.electronAPI.showMessage("تم إعادة الضبط", "نجاح");
+    } catch (err) {
+      console.error("Reset error:", err);
+      window.electronAPI.showMessage("حدث خطأ أثناء إعادة الضبط", "خطأ");
+    }
   });
 });

@@ -35,6 +35,7 @@
     "express": "^4.21.2",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.5"
   }
 }

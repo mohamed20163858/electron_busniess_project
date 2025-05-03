@@ -2,6 +2,8 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://localhost:3000"
@@ -10,65 +12,99 @@
     <!-- Tailwind CSS (local build) -->
     <link href="./css/tailwind.css" rel="stylesheet" />
   </head>
-  <body class="p-4">
-    <!-- Back Button -->
-    <button id="back-btn" class="mb-4 bg-gray-300 px-4 py-2 rounded">
-      الرجوع
-    </button>
 
-    <h1 class="text-2xl font-bold text-center mb-4">قائمة المركز المالي</h1>
-
-    <form id="bs-form" onsubmit="return false;">
-      <!-- Static Fields Table -->
-      <table class="min-w-full border-collapse mb-4">
-        <thead>
-          <tr>
-            <th class="border p-2">البند</th>
-            <th class="border p-2" id="col-header">القيمة</th>
-          </tr>
-        </thead>
-        <tbody id="static-fields-container"></tbody>
-      </table>
-
-      <!-- Custom Fields -->
-      <div id="custom-fields-container" class="mb-4"></div>
-
-      <div class="border p-4 rounded mb-4">
-        <h2 class="text-lg mb-2">أضف حقل مخصص</h2>
-        <input
-          type="text"
-          id="new-custom-label"
-          placeholder="التسمية"
-          class="border p-2 mr-2"
-        />
-        <button
-          type="button"
-          id="add-custom-btn"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
+  <body class="font-serif">
+    <div
+      class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center gap-4"
+    >
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] h-[400px] overflow-y-auto flex flex-col items-center justify-start"
+      >
+        <h1
+          class="bg-white text-black rounded-[5px] font-normal w-[50%] text-[40px] leading-[50px] p-4 text-center mb-[30px]"
         >
-          أضف
-        </button>
+          قائمة المركز المالي
+        </h1>
+
+        <div id="bs-form" class="w-[90%]">
+          <!-- Static Fields Table -->
+          <table class="min-w-full border-collapse mb-4">
+            <thead>
+              <tr>
+                <th class="border p-2">البند</th>
+                <th class="border p-2" id="col-header">القيمة</th>
+              </tr>
+            </thead>
+            <tbody id="static-fields-container"></tbody>
+          </table>
+
+          <!-- Custom Fields -->
+          <div id="custom-fields-container" class="mb-4"></div>
+
+          <div class="border p-4 rounded mb-4">
+            <h2 class="text-lg mb-2">أضف حقل مخصص</h2>
+            <input
+              type="text"
+              id="new-custom-label"
+              placeholder="التسمية"
+              class="border p-2 mr-2"
+            />
+            <button
+              type="button"
+              id="add-custom-btn"
+              class="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              أضف
+            </button>
+          </div>
+
+          <!-- Save & Reset Buttons -->
+          <div class="flex justify-center space-x-4">
+            <button
+              type="button"
+              id="save-btn"
+              class="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              حفظ
+            </button>
+            <button
+              type="button"
+              id="reset-btn"
+              class="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              إعادة ضبط
+            </button>
+            <!-- Back Button -->
+            <button id="back-btn" class="bg-gray-300 px-4 py-2 rounded">
+              الرجوع
+            </button>
+          </div>
+        </div>
+
+        <script src="./scripts/form1.js"></script>
       </div>
-
-      <!-- Save & Reset Buttons -->
-      <div class="flex justify-center space-x-4">
-        <button
-          type="button"
-          id="save-btn"
-          class="bg-green-500 text-white px-4 py-2 rounded"
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center min-h-[400px] justify-center"
+      >
+        <a
+          href="companyData.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[20px] leading-[30px] p-4 text-center mb-[30px]"
         >
-          حفظ
-        </button>
-        <button
-          type="button"
-          id="reset-btn"
-          class="bg-red-500 text-white px-4 py-2 rounded"
+          Company Data
+        </a>
+        <a
+          href="dataEntry.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[20px] leading-[30px] p-4 text-center mb-[30px]"
         >
-          إعادة ضبط
-        </button>
+          Data Entry
+        </a>
+        <a
+          href="form4.html"
+          class="bg-white text-black rounded-[5px] w-[80%] font-normal text-[20px] leading-[30px] p-4 text-center mb-[30px]"
+        >
+          Reoport
+        </a>
       </div>
-    </form>
-
-    <script src="./scripts/form1.js"></script>
+    </div>
   </body>
 </html>

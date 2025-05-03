@@ -1,5 +1,8 @@
-// Form 1 balance sheet
+// scripts/income-statement.js
+
 document.addEventListener("DOMContentLoaded", () => {
+  const { showMessage } = window.electronAPI;
+
   // 1) Determine mode from URL
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") === "comp" ? "comp" : "base";
@@ -8,26 +11,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const settings = JSON.parse(
     localStorage.getItem("comparisonSettings") || "null"
   );
-  if (!settings) return (window.location.href = "comparison-settings.html");
+  if (!settings) {
+    return (window.location.href = "companyData.html");
+  }
   const { company, baseYear, comparisonYear } = settings;
 
-  // 3) Compute the single year for this form
+  // 3) Compute the single year
   const year = mode === "base" ? baseYear : comparisonYear;
 
-  // 4) Update header
+  // 4) Update column header
   document.getElementById("col-header").textContent = year;
 
-  // 5) Define static fields
+  // 5) Define static fields for income statement
   const staticFields = {
-    totalAssets: "اجمالي الأصول",
-    totalDebits: "اجمالي الالتزمات",
-    currentAssets: "الأصول المتداولة",
-    currentDebits: "الالتزامات المتداولة",
-    inventory: "المخزون",
-    totalContributersRights: "اجمالي حقوق الملكية",
-    totalFixedAssets: "اجمالي الأصول الثابتة",
-    clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
-    creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
+    operatingProfit: "الربح التشغيلي",
+    benefit: "الفائدة",
+    rent: "الإيجار",
+    fixedCommitments: "الالتزامات الثابتة",
+    netSell: "صافي المبيعات",
+    futureNetSales: "صافي المبيعات الآجلة",
+    costSales: "تكلفة المبيعات",
+    totalProfit: "إجمالي الربح",
+    netYearProfit: "صافي الربح السنوي",
   };
 
   // 6) Initialize state
@@ -37,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   Object.keys(staticFields).forEach((k) => (state.staticValue[k] = ""));
 
-  // 7) Cache DOM elements
+  // 7) Cache DOM
   const staticTbody = document.getElementById("static-fields-container");
   const customDiv = document.getElementById("custom-fields-container");
   const newLabelIn = document.getElementById("new-custom-label");
@@ -89,11 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 10) Fetch existing data for company+year
+  // 10) Fetch existing data
   (async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/forms/balance-sheet/get?company=${encodeURIComponent(
+        `http://localhost:3000/api/forms/income-statement/get?company=${encodeURIComponent(
           company
         )}&year=${year}`
       );
@@ -110,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCustom();
   })();
 
-  // 11) Add a new custom field
+  // 11) Add custom field
   addCustomBtn.addEventListener("click", () => {
     const label = newLabelIn.value.trim();
     if (!label) return;
@@ -119,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCustom();
   });
 
-  // 12) Save (company + year)
+  // 12) Save data
   saveBtn.addEventListener("click", async () => {
     const payload = {
       company,
@@ -130,37 +135,46 @@ document.addEventListener("DOMContentLoaded", () => {
       }),
     };
     try {
-      await fetch("http://localhost:3000/api/forms/balance-sheet/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      window.electronAPI.showMessage("تم الحفظ", "نجاح");
+      const res = await fetch(
+        "http://localhost:3000/api/forms/income-statement/save",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!res.ok) throw new Error(res.statusText);
+      await showMessage("تم الحفظ", "نجاح");
     } catch (err) {
       console.error("Save error:", err);
-      window.electronAPI.showMessage("حدث خطأ أثناء الحفظ", "خطأ");
+      await showMessage("حدث خطأ أثناء الحفظ", "خطأ");
     }
   });
 
-  // 13) Reset (company + year)
+  // 13) Reset data
   resetBtn.addEventListener("click", async () => {
     try {
-      await fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company, year }),
-      });
-      // clear and re-render
+      const res = await fetch(
+        "http://localhost:3000/api/forms/income-statement/reset",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company, year }),
+        }
+      );
+      if (!res.ok) throw new Error(res.statusText);
+
+      // clear state
       Object.keys(state.staticValue).forEach(
         (k) => (state.staticValue[k] = "")
       );
       state.customFields = [];
       renderStatic();
       renderCustom();
-      window.electronAPI.showMessage("تم إعادة الضبط", "نجاح");
+      await showMessage("تم إعادة الضبط", "نجاح");
     } catch (err) {
       console.error("Reset error:", err);
-      window.electronAPI.showMessage("حدث خطأ أثناء إعادة الضبط", "خطأ");
+      await showMessage("حدث خطأ أثناء إعادة الضبط", "خطأ");
     }
   });
 });

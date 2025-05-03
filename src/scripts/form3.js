@@ -1,17 +1,23 @@
-// Form 1 balance sheet
+// scripts/cash-flow.js
+
 document.addEventListener("DOMContentLoaded", () => {
-  // 1) Determine mode from URL
+  const { showMessage } = window.electronAPI;
+
+  // 1) Mode from URL
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") === "comp" ? "comp" : "base";
 
-  // 2) Load settings
+  // 2) Load comparisonSettings
   const settings = JSON.parse(
     localStorage.getItem("comparisonSettings") || "null"
   );
-  if (!settings) return (window.location.href = "comparison-settings.html");
+  if (!settings) {
+    window.location.href = "companyData.html";
+    return;
+  }
   const { company, baseYear, comparisonYear } = settings;
 
-  // 3) Compute the single year for this form
+  // 3) Determine year
   const year = mode === "base" ? baseYear : comparisonYear;
 
   // 4) Update header
@@ -19,25 +25,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 5) Define static fields
   const staticFields = {
-    totalAssets: "اجمالي الأصول",
-    totalDebits: "اجمالي الالتزمات",
-    currentAssets: "الأصول المتداولة",
-    currentDebits: "الالتزامات المتداولة",
-    inventory: "المخزون",
-    totalContributersRights: "اجمالي حقوق الملكية",
-    totalFixedAssets: "اجمالي الأصول الثابتة",
-    clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
-    creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
+    netOperatingCashFlow: "صافي التدفقات النقدية التشغيلية",
+    netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
   };
 
-  // 6) Initialize state
+  // 6) State
   const state = {
     staticValue: {},
     customFields: [],
   };
   Object.keys(staticFields).forEach((k) => (state.staticValue[k] = ""));
 
-  // 7) Cache DOM elements
+  // 7) Cache DOM
   const staticTbody = document.getElementById("static-fields-container");
   const customDiv = document.getElementById("custom-fields-container");
   const newLabelIn = document.getElementById("new-custom-label");
@@ -48,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => history.back());
 
-  // 8) Render static fields
+  // 8) Render static
   function renderStatic() {
     staticTbody.innerHTML = "";
     Object.entries(staticFields).forEach(([key, label]) => {
@@ -56,11 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
       tr.innerHTML = `
           <td class="border p-2">${label}</td>
           <td class="border p-2">
-            <input 
-              type="text" 
+            <input
+              type="text"
               class="w-full p-1 border rounded"
               value="${state.staticValue[key] || ""}"
-            >
+            />
           </td>`;
       tr.querySelector("input").addEventListener("input", (e) => {
         state.staticValue[key] = e.target.value;
@@ -69,31 +68,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 9) Render custom fields
+  // 9) Render custom
   function renderCustom() {
     customDiv.innerHTML = "";
-    state.customFields.forEach((field, i) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "mb-3";
-      wrapper.innerHTML = `
-          <div class="font-medium mb-1">${field.label}</div>
-          <input 
-            type="text" 
+    state.customFields.forEach((f, i) => {
+      const w = document.createElement("div");
+      w.className = "mb-3";
+      w.innerHTML = `
+          <div class="font-medium mb-1">${f.label}</div>
+          <input
+            type="text"
             class="w-full p-2 border rounded"
-            value="${field.value || ""}"
-          >`;
-      wrapper.querySelector("input").addEventListener("input", (e) => {
+            value="${f.value || ""}"
+          />`;
+      w.querySelector("input").addEventListener("input", (e) => {
         state.customFields[i].value = e.target.value;
       });
-      customDiv.appendChild(wrapper);
+      customDiv.appendChild(w);
     });
   }
 
-  // 10) Fetch existing data for company+year
+  // 10) Fetch existing data
   (async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/forms/balance-sheet/get?company=${encodeURIComponent(
+        `http://localhost:3000/api/forms/cash-flow/get?company=${encodeURIComponent(
           company
         )}&year=${year}`
       );
@@ -110,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCustom();
   })();
 
-  // 11) Add a new custom field
+  // 11) Add custom
   addCustomBtn.addEventListener("click", () => {
     const label = newLabelIn.value.trim();
     if (!label) return;
@@ -119,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCustom();
   });
 
-  // 12) Save (company + year)
+  // 12) Save
   saveBtn.addEventListener("click", async () => {
     const payload = {
       company,
@@ -130,37 +129,45 @@ document.addEventListener("DOMContentLoaded", () => {
       }),
     };
     try {
-      await fetch("http://localhost:3000/api/forms/balance-sheet/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      window.electronAPI.showMessage("تم الحفظ", "نجاح");
+      const res = await fetch(
+        "http://localhost:3000/api/forms/cash-flow/save",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!res.ok) throw new Error(res.statusText);
+      await showMessage("تم الحفظ", "نجاح");
     } catch (err) {
       console.error("Save error:", err);
-      window.electronAPI.showMessage("حدث خطأ أثناء الحفظ", "خطأ");
+      await showMessage("حدث خطأ أثناء الحفظ", "خطأ");
     }
   });
 
-  // 13) Reset (company + year)
+  // 13) Reset
   resetBtn.addEventListener("click", async () => {
     try {
-      await fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company, year }),
-      });
-      // clear and re-render
+      const res = await fetch(
+        "http://localhost:3000/api/forms/cash-flow/reset",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ company, year }),
+        }
+      );
+      if (!res.ok) throw new Error(res.statusText);
+      // clear
       Object.keys(state.staticValue).forEach(
         (k) => (state.staticValue[k] = "")
       );
       state.customFields = [];
       renderStatic();
       renderCustom();
-      window.electronAPI.showMessage("تم إعادة الضبط", "نجاح");
+      await showMessage("تم إعادة الضبط", "نجاح");
     } catch (err) {
       console.error("Reset error:", err);
-      window.electronAPI.showMessage("حدث خطأ أثناء إعادة الضبط", "خطأ");
+      await showMessage("حدث خطأ أثناء إعادة الضبط", "خطأ");
     }
   });
 });

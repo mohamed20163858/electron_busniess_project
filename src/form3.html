@@ -2,320 +2,109 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://localhost:3000"
+    />
     <title>قائمة التدفقات النقدية</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./css/tailwind.css" rel="stylesheet" />
   </head>
-  <body class="p-4">
-    <!-- Back Button -->
-    <button id="back-btn" class="mb-4 bg-gray-300 px-4 py-2 rounded">
-      الرجوع للخلف
-    </button>
-    <h1 class="text-2xl font-bold text-center mb-4">قائمة التدفقات النقدية</h1>
-    <!-- Main Form -->
-    <form class="space-y-4" onsubmit="return false;">
-      <!-- Year Selection -->
-      <div>
-        <label class="block mb-1">السنة:</label>
-        <select id="year-select" class="w-full p-2 border rounded">
-          <option value="">اختر السنة</option>
-        </select>
-      </div>
-      <!-- Company Autocomplete -->
-      <div>
-        <label class="block mb-1">اسم الشركة:</label>
-        <input
-          id="company-input"
-          type="text"
-          list="companies"
-          class="w-full p-2 border rounded"
-        />
-        <datalist id="companies"></datalist>
-      </div>
-      <!-- Container for Static Fields -->
-      <div id="static-fields-container"></div>
-      <!-- Container for Custom Fields -->
-      <div id="custom-fields-container"></div>
-      <!-- Section to add new custom field -->
-      <div class="border p-4 rounded">
-        <h2 class="text-lg mb-2">أضف حقل مخصص</h2>
-        <input
-          type="text"
-          id="new-custom-label"
-          placeholder="التسمية (Label)"
-          class="border p-2 mr-2"
-        />
-        <button
-          type="button"
-          id="add-custom-field-btn"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
+  <body class="font-serif">
+    <div
+      class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center gap-4"
+    >
+      <!-- Left: Cash Flow Form -->
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] h-[400px] overflow-y-auto flex flex-col items-center justify-start"
+      >
+        <h1
+          class="bg-white text-black rounded-[5px] font-normal w-[50%] text-[40px] leading-[50px] p-4 text-center mb-[30px]"
         >
-          أضف الحقل
-        </button>
+          قائمة التدفقات النقدية
+        </h1>
+
+        <div id="cf-form" class="w-[90%]">
+          <!-- Static Fields Table -->
+          <table class="min-w-full border-collapse mb-4">
+            <thead>
+              <tr>
+                <th class="border p-2">البند</th>
+                <th class="border p-2" id="col-header">القيمة</th>
+              </tr>
+            </thead>
+            <tbody id="static-fields-container"></tbody>
+          </table>
+
+          <!-- Custom Fields -->
+          <div id="custom-fields-container" class="mb-4"></div>
+
+          <div class="border p-4 rounded mb-4">
+            <h2 class="text-lg mb-2">أضف حقل مخصص</h2>
+            <input
+              type="text"
+              id="new-custom-label"
+              placeholder="التسمية"
+              class="border p-2 mr-2"
+            />
+            <button
+              type="button"
+              id="add-custom-btn"
+              class="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              أضف
+            </button>
+          </div>
+
+          <!-- Save / Reset / Back -->
+          <div class="flex justify-center space-x-4">
+            <button
+              type="button"
+              id="save-btn"
+              class="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              حفظ
+            </button>
+            <button
+              type="button"
+              id="reset-btn"
+              class="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              إعادة ضبط
+            </button>
+            <button
+              type="button"
+              id="back-btn"
+              class="bg-gray-300 px-4 py-2 rounded"
+            >
+              الرجوع
+            </button>
+          </div>
+        </div>
+
+        <script src="./scripts/form3.js"></script>
       </div>
-      <!-- Save and Reset Buttons -->
-      <div class="flex justify-center space-x-4">
-        <button
-          type="button"
-          id="save-btn"
-          class="bg-green-500 text-white px-4 py-2 rounded"
+
+      <!-- Right: Navigation -->
+      <div
+        class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center min-h-[400px] justify-center"
+      >
+        <a
+          href="companyData.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+          >Company Data</a
         >
-          حفظ
-        </button>
-        <button
-          type="button"
-          id="reset-btn"
-          class="bg-red-500 text-white px-4 py-2 rounded"
+        <a
+          href="dataEntry.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+          >Data Entry</a
         >
-          إعادة الضبط
-        </button>
+        <a
+          href="form4.html"
+          class="bg-white text-black rounded-[5px] w-[80%] p-4 text-center mb-[30px]"
+          >Reoport</a
+        >
       </div>
-    </form>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Define static fields for the cash flow form
-        const staticFields = {
-          netOperatingCashFlow: "صافي التدفقات النقدية التشغيلية",
-          netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
-        };
-
-        // Initialize state
-        let state = {
-          year: "",
-          company: "",
-          staticFieldValues: {},
-          customFields: [],
-          companySuggestions: [],
-        };
-
-        // Initialize staticFieldValues with empty strings
-        for (let key in staticFields) {
-          state.staticFieldValues[key] = "";
-        }
-
-        // Cache DOM elements
-        const yearSelect = document.getElementById("year-select");
-        const companyInput = document.getElementById("company-input");
-        const companiesDatalist = document.getElementById("companies");
-        const staticFieldsContainer = document.getElementById(
-          "static-fields-container"
-        );
-        const customFieldsContainer = document.getElementById(
-          "custom-fields-container"
-        );
-        const newCustomLabelInput = document.getElementById("new-custom-label");
-        const addCustomFieldBtn = document.getElementById(
-          "add-custom-field-btn"
-        );
-        const saveBtn = document.getElementById("save-btn");
-        const resetBtn = document.getElementById("reset-btn");
-        const backBtn = document.getElementById("back-btn");
-
-        // Populate year select with the last 150 years
-        const currentYear = new Date().getFullYear();
-        for (let i = 0; i < 150; i++) {
-          const y = currentYear - i;
-          const option = document.createElement("option");
-          option.value = y;
-          option.textContent = y;
-          yearSelect.appendChild(option);
-        }
-
-        // Fetch company suggestions for autocomplete
-        function fetchCompanies() {
-          fetch("http://localhost:3000/api/companies")
-            .then((response) => (response.ok ? response.json() : []))
-            .then((data) => {
-              state.companySuggestions = data;
-              companiesDatalist.innerHTML = "";
-              data.forEach((c) => {
-                const option = document.createElement("option");
-                option.value = c;
-                companiesDatalist.appendChild(option);
-              });
-            })
-            .catch((err) => console.error("Error fetching companies:", err));
-        }
-        fetchCompanies();
-
-        // Render static fields
-        function renderStaticFields() {
-          staticFieldsContainer.innerHTML = "";
-          for (let key in staticFields) {
-            const div = document.createElement("div");
-            div.className = "space-y-1";
-            const label = document.createElement("label");
-            label.textContent = staticFields[key] + ":";
-            label.className = "block mb-1";
-            const input = document.createElement("input");
-            input.type = "text";
-            input.className = "w-full p-2 border rounded";
-            input.value = state.staticFieldValues[key] || "";
-            input.addEventListener("input", function (e) {
-              state.staticFieldValues[key] = e.target.value;
-            });
-            div.appendChild(label);
-            div.appendChild(input);
-            staticFieldsContainer.appendChild(div);
-          }
-        }
-        renderStaticFields();
-
-        // Render custom fields
-        function renderCustomFields() {
-          customFieldsContainer.innerHTML = "";
-          state.customFields.forEach((field, index) => {
-            const fieldDiv = document.createElement("div");
-            fieldDiv.className = "mb-4";
-            // Label input and delete button container
-            const labelDiv = document.createElement("div");
-            labelDiv.className = "flex items-center space-x-2";
-            const labelInput = document.createElement("input");
-            labelInput.type = "text";
-            labelInput.value = field.label;
-            labelInput.className = "p-2 border rounded";
-            labelInput.addEventListener("input", function (e) {
-              state.customFields[index].label = e.target.value;
-            });
-            const deleteBtn = document.createElement("button");
-            deleteBtn.type = "button";
-            deleteBtn.className = "text-red-500";
-            deleteBtn.textContent = "حذف";
-            deleteBtn.addEventListener("click", function () {
-              state.customFields.splice(index, 1);
-              renderCustomFields();
-            });
-            labelDiv.appendChild(labelInput);
-            labelDiv.appendChild(deleteBtn);
-            // Value input
-            const valueInput = document.createElement("input");
-            valueInput.type = "text";
-            valueInput.placeholder = "القيمة";
-            valueInput.className = "w-full p-2 border rounded mt-1";
-            valueInput.value = field.value;
-            valueInput.addEventListener("input", function (e) {
-              state.customFields[index].value = e.target.value;
-            });
-            fieldDiv.appendChild(labelDiv);
-            fieldDiv.appendChild(valueInput);
-            customFieldsContainer.appendChild(fieldDiv);
-          });
-        }
-
-        // Fetch existing form data if both year and company are set
-        function fetchFormData() {
-          if (state.year && state.company) {
-            const query = `http://localhost:3000/api/forms/cash-flow/get?year=${
-              state.year
-            }&company=${encodeURIComponent(state.company)}`;
-            fetch(query)
-              .then((response) => (response.ok ? response.json() : {}))
-              .then((data) => {
-                if (data && data.data) {
-                  try {
-                    const parsed = JSON.parse(data.data);
-                    state.staticFieldValues =
-                      parsed.static ||
-                      Object.keys(staticFields).reduce((acc, key) => {
-                        acc[key] = "";
-                        return acc;
-                      }, {});
-                    state.customFields = parsed.custom || [];
-                    renderStaticFields();
-                    renderCustomFields();
-                  } catch (err) {
-                    console.error("Error parsing fetched data", err);
-                  }
-                } else {
-                  state.staticFieldValues = Object.keys(staticFields).reduce(
-                    (acc, key) => {
-                      acc[key] = "";
-                      return acc;
-                    },
-                    {}
-                  );
-                  state.customFields = [];
-                  renderStaticFields();
-                  renderCustomFields();
-                }
-              })
-              .catch((err) => console.error("Error fetching form data:", err));
-          }
-        }
-
-        yearSelect.addEventListener("change", function (e) {
-          state.year = e.target.value;
-          fetchFormData();
-        });
-        companyInput.addEventListener("input", function (e) {
-          state.company = e.target.value;
-          fetchFormData();
-        });
-
-        // Add new custom field
-        addCustomFieldBtn.addEventListener("click", function () {
-          const label = newCustomLabelInput.value.trim();
-          if (label) {
-            const key = "custom" + (state.customFields.length + 1);
-            state.customFields.push({ key, label, value: "" });
-            newCustomLabelInput.value = "";
-            renderCustomFields();
-          }
-        });
-
-        // Handle save
-        saveBtn.addEventListener("click", function () {
-          const payload = {
-            year: state.year,
-            company: state.company,
-            data: JSON.stringify({
-              static: state.staticFieldValues,
-              custom: state.customFields,
-            }),
-          };
-          fetch("http://localhost:3000/api/forms/cash-flow/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          })
-            .then((response) => {
-              if (response.ok) window.electronAPI.showMessage("تم الحفظ", "تم");
-              else window.electronAPI.showMessage("فشل الحفظ", "خطأ");
-            })
-            .catch((err) => console.error("Error saving data:", err));
-        });
-
-        // Handle reset
-        resetBtn.addEventListener("click", function () {
-          fetch("http://localhost:3000/api/forms/cash-flow/reset", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ year: state.year, company: state.company }),
-          })
-            .then((response) => {
-              if (response.ok) {
-                state.staticFieldValues = Object.keys(staticFields).reduce(
-                  (acc, key) => {
-                    acc[key] = "";
-                    return acc;
-                  },
-                  {}
-                );
-                state.customFields = [];
-                renderStaticFields();
-                renderCustomFields();
-                window.electronAPI.showMessage("تم إعادة الضبط", "تم");
-              }
-            })
-            .catch((err) => console.error("Error resetting data:", err));
-        });
-
-        // Back button navigation
-        backBtn.addEventListener("click", function () {
-          window.location.href = "index.html";
-        });
-      });
-    </script>
+    </div>
   </body>
 </html>

@@ -3,42 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <title>تقرير النسب المالية</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+          default-src 'self';
+          script-src 'self';
+          style-src 'self';
+          connect-src 'self' http://localhost:3000;
+        "
+    />
+    <link href="./css/tailwind.css" rel="stylesheet" />
   </head>
   <body class="p-4">
     <h1 class="text-2xl font-bold text-center mb-4">تقرير النسب المالية</h1>
-    <div class="space-y-4 mb-4">
-      <div>
-        <label class="block mb-1">السنة:</label>
-        <select id="year-select" class="w-full p-2 border rounded">
-          <option value="">اختر السنة</option>
-        </select>
-      </div>
-      <div>
-        <label class="block mb-1">اسم الشركة:</label>
-        <input
-          id="company-input"
-          type="text"
-          list="companies"
-          class="w-full p-2 border rounded"
-        />
-        <datalist id="companies"></datalist>
-      </div>
-    </div>
-    <div class="flex justify-center gap-2 mb-4">
-      <button
-        id="generate-btn"
-        class="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        توليد التقرير
-      </button>
+
+    <div class="flex justify-center gap-4 mb-4">
+      <!-- Generate button removed -->
       <button id="back-btn" class="bg-gray-300 px-4 py-2 rounded">
         الرجوع للخلف
       </button>
     </div>
+
     <div id="report-table-container"></div>
 
-    <script src="./report.js"></script>
+    <script src="./scripts/report.js"></script>
   </body>
 </html>

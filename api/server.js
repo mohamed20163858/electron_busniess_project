@@ -28,18 +28,38 @@ app.get("/api/companies", async (req, res) => {
 
 // Endpoint to get form data (balance sheet, income statement, cash flow)
 app.get("/api/forms/:form/get", async (req, res) => {
+  const { form } = req.params;
+  const { baseYear, comparisonYear, company } = req.query;
+
+  // 1) Validate inputs
+  if (!company || !baseYear || !comparisonYear) {
+    console.error("Missing query params:", req.query);
+    return res
+      .status(400)
+      .json({ error: "company, baseYear and comparisonYear are all required" });
+  }
+
   try {
-    const { form } = req.params;
-    const { baseYear, comparisonYear, company } = req.query;
-    const data = await getFormDataByYearAndCompany(
+    console.log(`Fetching ${form} for`, company, baseYear, comparisonYear);
+    // 2) Call into your DB helper
+    const record = await getFormDataByYearAndCompany(
       form,
       baseYear,
       comparisonYear,
       company
     );
-    res.json({ data });
+
+    // 3) Always return an object with a `data` property (string or null)
+    if (!record) {
+      return res.json({ data: null });
+    }
+
+    // `record.data` should be your JSON payload string
+    return res.json({ data: record.data });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // 4) Log and send back the error message
+    console.error("Error in GET /api/forms/:form/get →", err);
+    return res.status(500).json({ error: err.message });
   }
 });
 

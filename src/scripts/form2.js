@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!settings) return (window.location.href = "companyData.html");
   const { company, baseYear, comparisonYear } = settings;
 
-  // 3) Determine year and update header
+  // 3) Year and header
   const year = mode === "base" ? baseYear : comparisonYear;
   document.getElementById("col-header").textContent = year;
 
-  // 4) Static fields definition
+  // 4) Static fields
   const staticFields = {
     operatingProfit: "الربح التشغيلي",
     benefit: "الفائدة",
@@ -30,10 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 5) State
-  const state = {
-    staticValue: {},
-    customFields: [],
-  };
+  const state = { staticValue: {}, customFields: [] };
   Object.keys(staticFields).forEach((k) => (state.staticValue[k] = ""));
 
   // 6) DOM refs
@@ -46,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => history.back());
 
-  // 7) Render both static & custom in one table
+  // 7) Render all rows
   function renderAll() {
     tbody.innerHTML = "";
 
@@ -56,14 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
       tr.innerHTML = `
         <td class="border p-2 font-medium">${label}</td>
         <td class="border p-2">
-          <input 
-            type="text" 
+          <input
+            type="text"
             class="w-full p-1 border rounded"
             value="${state.staticValue[key] || ""}"
           />
-        </td>`;
-      const inp = tr.querySelector("input");
-      inp.addEventListener("input", (e) => {
+        </td>
+        
+      `;
+      tr.querySelector("input").addEventListener("input", (e) => {
         state.staticValue[key] = e.target.value;
       });
       tbody.appendChild(tr);
@@ -71,27 +69,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 7b) separator
     const sep = document.createElement("tr");
-    sep.innerHTML = `<td colspan="2" class="border-t my-2"></td>`;
+    sep.innerHTML = `<td colspan="2" class="border-t"></td>`;
     tbody.appendChild(sep);
 
-    // 7c) custom rows
+    // 7c) custom rows with delete
     state.customFields.forEach((f, i) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="border p-2">
-          <input 
+          <input
             type="text"
             class="w-full p-1 border rounded"
             value="${f.label}"
           />
         </td>
         <td class="border p-2">
-          <input 
+          <input
             type="text"
             class="w-full p-1 border rounded"
             value="${f.value}"
           />
-        </td>`;
+        </td>
+        
+          <button
+            type="button"
+            data-index="${i}"
+            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2"
+          >
+            حذف
+          </button>
+        
+      `;
       const [labIn, valIn] = tr.querySelectorAll("input");
       labIn.addEventListener("input", (e) => {
         state.customFields[i].label = e.target.value;
@@ -99,11 +107,43 @@ document.addEventListener("DOMContentLoaded", () => {
       valIn.addEventListener("input", (e) => {
         state.customFields[i].value = e.target.value;
       });
+
+      // **delete handler**: remove from state **and** resave to DB
+      tr.querySelector("button").addEventListener("click", async (e) => {
+        const idx = Number(e.currentTarget.dataset.index);
+        state.customFields.splice(idx, 1);
+        renderAll();
+
+        // Immediately persist the deletion
+        const payload = {
+          company,
+          year,
+          data: JSON.stringify({
+            static: state.staticValue,
+            custom: state.customFields,
+          }),
+        };
+        try {
+          const res = await fetch(
+            "http://localhost:3000/api/forms/income-statement/save",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+          if (!res.ok) throw new Error(res.statusText);
+        } catch (err) {
+          console.error("Error saving after delete:", err);
+          await showMessage("حدث خطأ أثناء حذف الحقل", "خطأ");
+        }
+      });
+
       tbody.appendChild(tr);
     });
   }
 
-  // 8) Fetch existing
+  // 8) Fetch existing data
   (async () => {
     try {
       const res = await fetch(

@@ -16,6 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const backBtn = document.getElementById("back-btn");
   const container = document.getElementById("report-table-container");
+  const printBtn = document.getElementById("print-btn");
+  // print functionality
+  printBtn.addEventListener("click", () => {
+    window.location.href = `report-print.html`;
+  });
 
   // Format ratio values
   function fmt(r) {

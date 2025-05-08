@@ -1,6 +1,5 @@
-// Form 1 balance sheet
 document.addEventListener("DOMContentLoaded", () => {
-  // 1) Determine mode from URL
+  // 1) Determine mode
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") === "comp" ? "comp" : "base";
 
@@ -11,13 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!settings) return (window.location.href = "comparison-settings.html");
   const { company, baseYear, comparisonYear } = settings;
 
-  // 3) Compute the single year for this form
+  // 3) Determine year
   const year = mode === "base" ? baseYear : comparisonYear;
-
-  // 4) Update header
   document.getElementById("col-header").textContent = year;
 
-  // 5) Define static fields
+  // 4) Static fields
   const staticFields = {
     totalAssets: "اجمالي الأصول",
     totalDebits: "اجمالي الالتزمات",
@@ -30,17 +27,16 @@ document.addEventListener("DOMContentLoaded", () => {
     creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
   };
 
-  // 6) Initialize state
+  // 5) State
   const state = {
     staticValue: {},
     customFields: [],
   };
   Object.keys(staticFields).forEach((k) => (state.staticValue[k] = ""));
 
-  // 7) Cache DOM elements
-  const staticTbody = document.getElementById("static-fields-container");
-  const customDiv = document.getElementById("custom-fields-container");
-  const newLabelIn = document.getElementById("new-custom-label");
+  // 6) DOM refs
+  const tbody = document.getElementById("fields-container");
+  const newCustomIn = document.getElementById("new-custom-label");
   const addCustomBtn = document.getElementById("add-custom-btn");
   const saveBtn = document.getElementById("save-btn");
   const resetBtn = document.getElementById("reset-btn");
@@ -48,48 +44,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => history.back());
 
-  // 8) Render static fields
-  function renderStatic() {
-    staticTbody.innerHTML = "";
-    Object.entries(staticFields).forEach(([key, label]) => {
+  // 7) Render everything in one table
+  function renderAll() {
+    tbody.innerHTML = "";
+
+    // 7a) Static rows
+    for (const [key, label] of Object.entries(staticFields)) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-          <td class="border p-2">${label}</td>
-          <td class="border p-2">
-            <input 
-              type="text" 
-              class="w-full p-1 border rounded"
-              value="${state.staticValue[key] || ""}"
-            >
-          </td>`;
-      tr.querySelector("input").addEventListener("input", (e) => {
-        state.staticValue[key] = e.target.value;
-      });
-      staticTbody.appendChild(tr);
-    });
-  }
-
-  // 9) Render custom fields
-  function renderCustom() {
-    customDiv.innerHTML = "";
-    state.customFields.forEach((field, i) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "mb-3";
-      wrapper.innerHTML = `
-          <div class="font-medium mb-1">${field.label}</div>
+        <td class="border p-2 font-medium">${label}</td>
+        <td class="border p-2">
           <input 
             type="text" 
-            class="w-full p-2 border rounded"
-            value="${field.value || ""}"
-          >`;
-      wrapper.querySelector("input").addEventListener("input", (e) => {
-        state.customFields[i].value = e.target.value;
+            class="w-full p-1 border rounded"
+            value="${state.staticValue[key] || ""}"
+          />
+        </td>
+      `;
+      const input = tr.querySelector("input");
+      input.addEventListener("input", (e) => {
+        state.staticValue[key] = e.target.value;
       });
-      customDiv.appendChild(wrapper);
+      tbody.appendChild(tr);
+    }
+
+    // 7b) Separator row (optional)
+    const sep = document.createElement("tr");
+    sep.innerHTML = `<td colspan="2" class="border-t my-2"></td>`;
+    tbody.appendChild(sep);
+
+    // 7c) Custom rows
+    state.customFields.forEach((field, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="border p-2">
+          <input 
+            type="text"
+            class="w-full p-1 border rounded"
+            value="${field.label}"
+          />
+        </td>
+        <td class="border p-2">
+          <input 
+            type="text"
+            class="w-full p-1 border rounded"
+            value="${field.value}"
+          />
+        </td>
+      `;
+      const [labIn, valIn] = tr.querySelectorAll("input");
+      labIn.addEventListener(
+        "input",
+        (e) => (state.customFields[idx].label = e.target.value)
+      );
+      valIn.addEventListener(
+        "input",
+        (e) => (state.customFields[idx].value = e.target.value)
+      );
+      tbody.appendChild(tr);
     });
   }
 
-  // 10) Fetch existing data for company+year
+  // 8) Fetch existing
   (async () => {
     try {
       const res = await fetch(
@@ -106,20 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error("Fetch error:", err);
     }
-    renderStatic();
-    renderCustom();
+    renderAll();
   })();
 
-  // 11) Add a new custom field
+  // 9) Add custom
   addCustomBtn.addEventListener("click", () => {
-    const label = newLabelIn.value.trim();
+    const label = newCustomIn.value.trim();
     if (!label) return;
     state.customFields.push({ label, value: "" });
-    newLabelIn.value = "";
-    renderCustom();
+    newCustomIn.value = "";
+    renderAll();
   });
 
-  // 12) Save (company + year)
+  // 10) Save
   saveBtn.addEventListener("click", async () => {
     const payload = {
       company,
@@ -142,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 13) Reset (company + year)
+  // 11) Reset
   resetBtn.addEventListener("click", async () => {
     try {
       await fetch("http://localhost:3000/api/forms/balance-sheet/reset", {
@@ -150,13 +165,11 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company, year }),
       });
-      // clear and re-render
       Object.keys(state.staticValue).forEach(
         (k) => (state.staticValue[k] = "")
       );
       state.customFields = [];
-      renderStatic();
-      renderCustom();
+      renderAll();
       window.electronAPI.showMessage("تم إعادة الضبط", "نجاح");
     } catch (err) {
       console.error("Reset error:", err);

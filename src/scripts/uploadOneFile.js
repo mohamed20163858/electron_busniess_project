@@ -167,7 +167,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const customArr = [];
 
         for (let i = 1; i < rows.length; i++) {
-          const [, labelRaw, rawValue] = rows[i];
+          // take the row, remove any null/undefined/empty‐string cells …
+          const filled = rows[i].filter(
+            (cell) =>
+              cell !== null && cell !== undefined && String(cell).trim() !== ""
+          );
+          // … and only proceed if we now have at least two columns
+          if (filled.length < 2) {
+            console.log(
+              `  Row ${i} skipped – fewer than 2 columns after filtering.`
+            );
+            continue;
+          }
+
+          const [labelRaw, rawValue] = filled;
           const label = String(labelRaw || "").trim();
           if (!label || !rawValue) continue;
 

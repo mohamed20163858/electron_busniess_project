@@ -38,10 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const newCustomIn = document.getElementById("new-custom-label");
   const addCustomBtn = document.getElementById("add-custom-btn");
   const saveBtn = document.getElementById("save-btn");
+  const printBtn = document.getElementById("print-btn");
   const resetBtn = document.getElementById("reset-btn");
+
   const backBtn = document.getElementById("back-btn");
 
   backBtn.addEventListener("click", () => history.back());
+  // print functionality
+  printBtn.addEventListener("click", () => {
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    if (!mode) {
+      console.error("cannot print without mode");
+      return showMessage("حدث خطأ أثناء الطباعة", "خطأ");
+    }
+    window.location.href = `form2-print.html?mode=${mode}`;
+  });
 
   // 7) Render all rows
   function renderAll() {
@@ -94,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button
             type="button"
             data-index="${i}"
-            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2"
+            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2 no-printable"
           >
             حذف
           </button>

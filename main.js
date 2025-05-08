@@ -1,12 +1,14 @@
 // main.js
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
+const fs = require("fs");
 
 // Start the internal API server
 require("./api/server.js");
+let mainWindow;
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -31,6 +33,27 @@ ipcMain.handle("show-message", async (event, { message, title = "Info" }) => {
     message,
     buttons: ["OK"],
   });
+});
+// Handle PDF export
+ipcMain.handle("export-pdf", async () => {
+  // you can tweak these options as you like
+  const pdfBuffer = await mainWindow.webContents.printToPDF({
+    printBackground: true,
+    marginsType: 1,
+    pageSize: "A4",
+  });
+  return pdfBuffer;
+});
+ipcMain.handle("save-pdf", async (_event, pdfBuffer) => {
+  const { filePath } = await dialog.showSaveDialog({
+    defaultPath: `report-${Date.now()}.pdf`,
+    filters: [{ name: "PDF", extensions: ["pdf"] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, pdfBuffer);
+    return { saved: true };
+  }
+  return { saved: false };
 });
 
 app.on("window-all-closed", () => {

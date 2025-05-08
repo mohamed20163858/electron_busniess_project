@@ -13,4 +13,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("show-message", { message: msg, title }),
   readXlsxFile, // ✅ expose the function
   // any other APIs you already expose...
+  exportPDF: () => ipcRenderer.invoke("export-pdf"),
+  savePDF: (buffer) => ipcRenderer.invoke("save-pdf", buffer),
 });

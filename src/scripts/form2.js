@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const mode = new URLSearchParams(window.location.search).get("mode");
     if (!mode) {
       console.error("cannot print without mode");
-      return showMessage("حدث خطأ أثناء الطباعة", "خطأ");
+      return showMessage("حدث خطأ أثناء معاينة الطباعة", "خطأ");
     }
     window.location.href = `form2-print.html?mode=${mode}`;
   });

@@ -44,6 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("save-btn");
   const resetBtn = document.getElementById("reset-btn");
   const backBtn = document.getElementById("back-btn");
+  const printBtn = document.getElementById("print-btn");
+  // print functionality
+  printBtn.addEventListener("click", () => {
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    if (!mode) {
+      console.error("cannot print without mode");
+      return showMessage("حدث خطأ أثناء معاينة الطباعة", "خطأ");
+    }
+    window.location.href = `form3-print.html?mode=${mode}`;
+  });
 
   backBtn.addEventListener("click", () => history.back());
 

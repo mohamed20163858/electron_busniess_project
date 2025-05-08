@@ -1,4 +1,3 @@
-// Form 2 print script for the income statement form ./src/form2-print.js
 (async function () {
   // 1) Read mode & settings
   const params = new URLSearchParams(window.location.search);
@@ -18,11 +17,11 @@
     "subheader"
   ).textContent = `${company} — السنة ${year}`;
 
-  // 3) Fetch the data
+  // 3) Fetch the cash-flow data
   let data;
   try {
     const res = await fetch(
-      `http://localhost:3000/api/forms/income-statement/get?company=${encodeURIComponent(
+      `http://localhost:3000/api/forms/cash-flow/get?company=${encodeURIComponent(
         company
       )}&year=${year}`
     );
@@ -49,33 +48,23 @@
 
   // static fields first
   const staticFields = {
-    operatingProfit: "الربح التشغيلي",
-    benefit: "الفائدة",
-    rent: "الإيجار",
-    fixedCommitments: "الالتزامات الثابتة",
-    netSell: "صافي المبيعات",
-    futureNetSales: "صافي المبيعات الآجلة",
-    costSales: "تكلفة المبيعات",
-    totalProfit: "إجمالي الربح",
-    netYearProfit: "صافي الربح السنوي",
+    netOperatingCashFlow: "صافي التدفقات النقدية التشغيلية",
+    netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
   };
 
   for (let [key, label] of Object.entries(staticFields)) {
     const val = statics[key];
-    if (!val) continue; // skip if not present
+    if (val == null || val === "") continue;
     html += `
         <tr>
           <td class="border px-4 py-2 text-right">${label}</td>
-          <td class="border px-4 py-2 text-right">${
-            val != null ? val : "-"
-          }</td>
+          <td class="border px-4 py-2 text-right">${val}</td>
         </tr>
       `;
   }
 
   // custom fields
   if (custom.length) {
-    // html += `<tr><td colspan="2" class="py-4"></td></tr>`;
     for (let f of custom) {
       html += `
           <tr>
@@ -91,10 +80,9 @@
 
   // 5) Wire up buttons
   document.getElementById("print-btn").addEventListener("click", async () => {
-    // window.print();
+    //   window.print();
     const pdf = await window.electronAPI.exportPDF();
     await window.electronAPI.savePDF(pdf);
-    // window.close();
   });
   document.getElementById("back-btn").addEventListener("click", () => {
     window.history.back();

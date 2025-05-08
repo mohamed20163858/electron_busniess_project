@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        connect-src 'self' http://localhost:3000;
+      "
+    />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>طباعة قائمة المركز المالي</title>
+    <link href="./css/tailwind.css" rel="stylesheet" />
+    <link href="./css/print.css" rel="stylesheet" media="print" />
+  </head>
+  <body class="font-serif p-[2rem] pb-0 min-h-[100vh]">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold">قائمة المركز المالي</h1>
+      <div id="subheader" class="mt-2 text-lg"></div>
+    </div>
+
+    <div id="table-container" class="overflow-x-auto flex justify-center"></div>
+
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-white p-4 flex justify-center items-center gap-[100px] border border-gray-200 rounded shadow-md no-print"
+    >
+      <button id="print-btn" class="bg-blue-600 text-white px-4 py-2 rounded">
+        طباعة
+      </button>
+      <button id="back-btn" class="bg-gray-400 text-white px-4 py-2 rounded">
+        رجوع
+      </button>
+    </div>
+
+    <script src="./scripts/form1-print.js"></script>
+  </body>
+</html>

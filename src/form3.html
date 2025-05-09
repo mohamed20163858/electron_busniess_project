@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://localhost:3000"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        img-src 'self' data:;
+        connect-src 'self' http://localhost:3000;
+      "
     />
     <title>قائمة التدفقات النقدية</title>
     <link href="./css/tailwind.css" rel="stylesheet" />
@@ -14,7 +20,7 @@
     <div
       class="h-screen bg-cover bg-center bg-[url('../../assests/background.jpg')] flex items-center justify-center gap-4"
     >
-      <!-- Left: Cash Flow Form -->
+      <!-- Main form panel -->
       <div
         class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[60%] h-[400px] overflow-y-auto flex flex-col items-center justify-start"
       >
@@ -25,7 +31,6 @@
         </h1>
 
         <div id="cf-form" class="w-[90%]">
-          <!-- Static Fields Table -->
           <table class="min-w-full border-collapse mb-4">
             <thead>
               <tr>
@@ -33,12 +38,10 @@
                 <th class="border p-2" id="col-header">القيمة</th>
               </tr>
             </thead>
-            <tbody id="static-fields-container"></tbody>
+            <tbody id="fields-container"></tbody>
           </table>
 
-          <!-- Custom Fields -->
-          <div id="custom-fields-container" class="mb-4"></div>
-
+          <!-- Add custom field -->
           <div class="border p-4 rounded mb-4">
             <h2 class="text-lg mb-2">أضف حقل مخصص</h2>
             <input
@@ -56,7 +59,7 @@
             </button>
           </div>
 
-          <!-- Save / Reset / Back -->
+          <!-- Actions -->
           <div class="flex justify-center space-x-4">
             <button
               type="button"
@@ -66,6 +69,7 @@
               حفظ
             </button>
             <button
+              type="button"
               id="print-btn"
               class="bg-blue-500 text-white px-4 py-2 rounded"
             >
@@ -87,11 +91,9 @@
             </button>
           </div>
         </div>
-
-        <script src="./scripts/form3.js"></script>
       </div>
 
-      <!-- Right: Navigation -->
+      <!-- Navigation panel -->
       <div
         class="bg-transparent-red px-6 pt-[30px] rounded-lg shadow-lg w-[30%] flex flex-col items-center min-h-[400px] justify-center"
       >
@@ -112,5 +114,7 @@
         >
       </div>
     </div>
+
+    <script src="./scripts/form3.js"></script>
   </body>
 </html>

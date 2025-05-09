@@ -76,4 +76,95 @@ contextBridge.exposeInMainWorld("electronAPI", {
     await wb.xlsx.writeFile(filePath);
     return { canceled: false, filePath };
   },
+  exportReportExcel: async (
+    company,
+    baseYear,
+    comparisonYear,
+    sections,
+    defaultFileName
+  ) => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("تقرير النسب المالية");
+
+    const totalCols = 4;
+    let row = 1;
+
+    // 1) Main title
+    ws.mergeCells(row, 1, row, totalCols);
+    const titleCell = ws.getCell(row, 1);
+    titleCell.value = `تقرير النسب المالية — ${company} (${baseYear} vs ${comparisonYear})`;
+    titleCell.font = { size: 16, bold: true };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    row += 2; // leave a blank line
+
+    // helper to style a header row
+    function styleHeader(r) {
+      r.font = { bold: true };
+      r.alignment = { horizontal: "center" };
+      r.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFDDDDDD" }, // yellow
+        };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+    }
+
+    // 2) For each section
+    for (const { title, rows: dataRows } of sections) {
+      // section header
+      ws.mergeCells(row, 1, row, totalCols);
+      const secCell = ws.getCell(row, 1);
+      secCell.value = title;
+      secCell.font = { bold: true };
+      secCell.alignment = { horizontal: "center" };
+      secCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+      };
+      row++;
+
+      // column headers
+      const headerRow = ws.getRow(row++);
+      headerRow.values = [
+        "الوصف",
+        baseYear,
+        comparisonYear,
+        "التعليق",
+      ].reverse();
+      styleHeader(headerRow);
+
+      // data rows
+      dataRows.forEach(([desc, cur, prev, comm]) => {
+        const dr = ws.getRow(row++);
+        dr.values = [desc, cur, prev, comm].reverse();
+        dr.alignment = { horizontal: "right" };
+      });
+
+      row++; // blank line before next section
+    }
+
+    // auto-size
+    ws.columns.forEach((c) => (c.width = 45));
+
+    // 3) Show save dialog
+    const { filePath, canceled } = await ipcRenderer.invoke(
+      "show-save-dialog",
+      {
+        defaultPath: defaultFileName,
+        filters: [{ name: "Excel Workbook", extensions: ["xlsx"] }],
+      }
+    );
+    if (canceled) return { canceled };
+
+    await wb.xlsx.writeFile(filePath);
+    return { canceled: false, filePath };
+  },
 });

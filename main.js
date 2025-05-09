@@ -57,32 +57,32 @@ ipcMain.handle("save-pdf", async (_event, pdfBuffer) => {
   return { saved: false };
 });
 
-ipcMain.handle(
-  "export-excel",
-  async (event, { sheetName, headers, rows, defaultPath }) => {
-    // 1) Ask the user where to save
-    const { canceled, filePath } = await dialog.showSaveDialog({
-      title: "حفظ كملف Excel",
-      defaultPath: defaultPath || `${sheetName}.xlsx`,
-      filters: [{ name: "Excel Workbook", extensions: ["xlsx"] }],
-    });
-    if (canceled || !filePath) return { canceled: true };
+// ipcMain.handle(
+//   "export-excel",
+//   async (event, { sheetName, headers, rows, defaultPath }) => {
+//     // 1) Ask the user where to save
+//     const { canceled, filePath } = await dialog.showSaveDialog({
+//       title: "حفظ كملف Excel",
+//       defaultPath: defaultPath || `${sheetName}.xlsx`,
+//       filters: [{ name: "Excel Workbook", extensions: ["xlsx"] }],
+//     });
+//     if (canceled || !filePath) return { canceled: true };
 
-    // 2) Build workbook
-    const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet(sheetName);
+//     // 2) Build workbook
+//     const wb = new ExcelJS.Workbook();
+//     const ws = wb.addWorksheet(sheetName);
 
-    // 3) Add header row
-    ws.addRow(headers);
+//     // 3) Add header row
+//     ws.addRow(headers);
 
-    // 4) Add your data rows
-    rows.forEach((r) => ws.addRow(r));
+//     // 4) Add your data rows
+//     rows.forEach((r) => ws.addRow(r));
 
-    // 5) Write to disk
-    await wb.xlsx.writeFile(filePath);
-    return { canceled: false, filePath };
-  }
-);
+//     // 5) Write to disk
+//     await wb.xlsx.writeFile(filePath);
+//     return { canceled: false, filePath };
+//   }
+// );
 // Listen for renderer asking to show a save dialog:
 ipcMain.handle("show-save-dialog", async (event, options) => {
   // Use the sender’s BrowserWindow as the parent

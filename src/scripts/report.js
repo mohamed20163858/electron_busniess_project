@@ -1,7 +1,7 @@
 // scripts/report.js
 
 const comments = window.myAPI.comments;
-const { showMessage } = window.electronAPI;
+const { showMessage, exporReportExcel } = window.electronAPI;
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Load saved settings
@@ -20,6 +20,78 @@ document.addEventListener("DOMContentLoaded", async () => {
   // print functionality
   printBtn.addEventListener("click", () => {
     window.location.href = `report-print.html`;
+  });
+
+  // --- (new) wire up “Export to Excel” button ---
+  const exportBtn = document.getElementById("export-btn");
+  // gather buckets & titles (same as before) …
+  function buildSections(report) {
+    const titles = {
+      debt: "نسب المديونية",
+      liquidity: "نسب السيولة",
+      activity: "نسب النشاط",
+      profitability: "نسب الربحية",
+    };
+    // reuse your bucket logic …
+    const buckets = {
+      debt: [],
+      liquidity: [],
+      activity: [],
+      profitability: [],
+    };
+    const idx = (k) => parseInt(k.replace("ratio", "")) || Infinity;
+    Object.keys(report.base)
+      .concat(Object.keys(report.comparison))
+      .filter((k) => report.base[k]?.label || report.comparison[k]?.label)
+      .forEach((k) => {
+        const n = idx(k);
+        if (n <= 6) buckets.debt.push(k);
+        else if (n <= 15) buckets.liquidity.push(k);
+        else if (n <= 27) buckets.activity.push(k);
+        else buckets.profitability.push(k);
+      });
+
+    const sections = [];
+    for (let cat of ["debt", "liquidity", "activity", "profitability"]) {
+      if (!buckets[cat].length) continue;
+      const rows = buckets[cat].map((key) => {
+        const r1 = report.base[key] || {};
+        const r2 = report.comparison[key] || {};
+        return [
+          r1.label || r2.label || key,
+          fmt(r1),
+          fmt(r2),
+          comment(r1?.value, r2?.value, key),
+        ];
+      });
+      sections.push({ title: titles[cat], rows });
+    }
+    return sections;
+  }
+  exportBtn.addEventListener("click", async () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("comparisonSettings"));
+      const report = await fetchReport();
+      if (!report) throw new Error("لا يوجد تقرير");
+
+      const sections = buildSections(report);
+      const defaultFile = `تقرير_النسب_${saved.company}_${saved.baseYear}_${saved.comparisonYear}.xlsx`;
+
+      const { canceled, filePath } = await window.electronAPI.exportReportExcel(
+        saved.company,
+        saved.baseYear,
+        saved.comparisonYear,
+        sections,
+        defaultFile
+      );
+
+      if (!canceled) {
+        await showMessage(`تم التصدير إلى:\n${filePath}`, "نجاح");
+      }
+    } catch (err) {
+      console.error(err);
+      await showMessage("فشل التصدير", "خطأ");
+    }
   });
 
   // Format ratio values

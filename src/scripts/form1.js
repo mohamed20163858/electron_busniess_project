@@ -101,6 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
             value="${field.value}"
           />
         </td>
+        <button
+            type="button"
+            data-index="${idx}"
+            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2"
+          >
+            حذف
+          </button>
       `;
       const [labIn, valIn] = tr.querySelectorAll("input");
       labIn.addEventListener(
@@ -111,6 +118,36 @@ document.addEventListener("DOMContentLoaded", () => {
         "input",
         (e) => (state.customFields[idx].value = e.target.value)
       );
+      // **delete handler**: remove from state **and** resave to DB
+      tr.querySelector("button").addEventListener("click", async (e) => {
+        const idx = Number(e.currentTarget.dataset.index);
+        state.customFields.splice(idx, 1);
+        renderAll();
+
+        // Immediately persist the deletion
+        const payload = {
+          company,
+          year,
+          data: JSON.stringify({
+            static: state.staticValue,
+            custom: state.customFields,
+          }),
+        };
+        try {
+          const res = await fetch(
+            "http://localhost:3000/api/forms/balance-sheet/save",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+          if (!res.ok) throw new Error(res.statusText);
+        } catch (err) {
+          console.error("Error saving after delete:", err);
+          await showMessage("حدث خطأ أثناء حذف الحقل", "خطأ");
+        }
+      });
       tbody.appendChild(tr);
     });
   }

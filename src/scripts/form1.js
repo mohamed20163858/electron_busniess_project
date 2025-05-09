@@ -76,12 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
           })
           .reverse()
       )
-      .filter((r) => r.some((v) => v !== "")); // filter out empty rows
+      .filter((r) => {
+        const [label, value] = r;
+        if (!label || !value) return false;
+        return true;
+      }); // filter out empty rows
     console.log("rows", rows);
 
     // 4) Delegate to main via preload
     const { canceled, filePath } = await window.electronAPI.exportExcel(
-      "Balance Sheet",
+      "قائمة المركز المالي",
       headers,
       rows,
       `BalanceSheet_${company}_${year}.xlsx`

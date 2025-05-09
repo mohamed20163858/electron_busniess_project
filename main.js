@@ -83,6 +83,12 @@ ipcMain.handle(
     return { canceled: false, filePath };
   }
 );
+// Listen for renderer asking to show a save dialog:
+ipcMain.handle("show-save-dialog", async (event, options) => {
+  // Use the sender’s BrowserWindow as the parent
+  const win = BrowserWindow.fromWebContents(event.sender);
+  return dialog.showSaveDialog(win, options);
+});
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

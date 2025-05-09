@@ -37,8 +37,57 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("col-header").textContent = year;
 
   backBtn.addEventListener("click", () => history.back());
+  // print functionality
   printBtn.addEventListener("click", () => {
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    if (!mode) {
+      console.error("cannot print without mode");
+      return showMessage("حدث خطأ أثناء معاينة الطباعة", "خطأ");
+    }
     window.location.href = `form3-print.html?mode=${mode}`;
+  });
+  // --- (new) wire up “Export to Excel” button ---
+  const exportBtn = document.getElementById("export-btn");
+  exportBtn.addEventListener("click", async () => {
+    // 1) Grab the table in your #bs-form container
+    const table = document.querySelector("#cf-form table");
+    if (!table) return;
+
+    // 2) Build the header row
+    const headers = Array.from(table.querySelectorAll("thead th"))
+      .map((th) => th.textContent.trim())
+      .reverse();
+
+    console.log("headers", headers);
+
+    // 3) Build the data rows
+    const rows = Array.from(table.querySelectorAll("tbody tr"))
+      .map((tr) =>
+        Array.from(tr.querySelectorAll("td"))
+          .map((td) => {
+            const input = td.querySelector("input");
+            return input ? input.value.trim() : td.textContent.trim();
+          })
+          .reverse()
+      )
+      .filter((r) => {
+        const [label, value] = r;
+        if (!label || !value) return false;
+        return true;
+      }); // filter out empty rows
+    console.log("rows", rows);
+
+    // 4) Delegate to main via preload
+    const { canceled, filePath } = await window.electronAPI.exportExcel(
+      "قائمة التدفقات النقدية",
+      headers,
+      rows,
+      `CashFlow_${company}_${year}.xlsx`
+    );
+
+    if (!canceled) {
+      window.electronAPI.showMessage(`تم الحفظ في:\n${filePath}`, "نجاح");
+    }
   });
 
   // 7) Render everything in one table

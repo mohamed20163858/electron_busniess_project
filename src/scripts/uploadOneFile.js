@@ -16,8 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 2) DOM references
   const fileInput = document.getElementById("excel-file");
+  const fileNameSpan = document.getElementById("file-name");
   const uploadBtn = document.getElementById("upload-btn");
   const statusDiv = document.getElementById("status");
+
+  fileInput.addEventListener("change", function () {
+    const fileName = this.files[0]?.name || "No file chosen";
+    fileNameSpan.textContent = `${fileName} Added`;
+  });
 
   // 3) Sheet → form configuration
   const sheetMap = {

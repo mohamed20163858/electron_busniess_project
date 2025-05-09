@@ -52,6 +52,46 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = `form1-print.html?mode=${mode}`;
   });
 
+  // --- (new) wire up “Export to Excel” button ---
+  const exportBtn = document.getElementById("export-btn");
+  exportBtn.addEventListener("click", async () => {
+    // 1) Grab the table in your #bs-form container
+    const table = document.querySelector("#bs-form table");
+    if (!table) return;
+
+    // 2) Build the header row
+    const headers = Array.from(table.querySelectorAll("thead th"))
+      .map((th) => th.textContent.trim())
+      .reverse();
+
+    console.log("headers", headers);
+
+    // 3) Build the data rows
+    const rows = Array.from(table.querySelectorAll("tbody tr"))
+      .map((tr) =>
+        Array.from(tr.querySelectorAll("td"))
+          .map((td) => {
+            const input = td.querySelector("input");
+            return input ? input.value.trim() : td.textContent.trim();
+          })
+          .reverse()
+      )
+      .filter((r) => r.some((v) => v !== "")); // filter out empty rows
+    console.log("rows", rows);
+
+    // 4) Delegate to main via preload
+    const { canceled, filePath } = await window.electronAPI.exportExcel(
+      "Balance Sheet",
+      headers,
+      rows,
+      `BalanceSheet_${company}_${year}.xlsx`
+    );
+
+    if (!canceled) {
+      window.electronAPI.showMessage(`تم الحفظ في:\n${filePath}`, "نجاح");
+    }
+  });
+
   backBtn.addEventListener("click", () => history.back());
 
   // 7) Render everything in one table

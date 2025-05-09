@@ -15,4 +15,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // any other APIs you already expose...
   exportPDF: () => ipcRenderer.invoke("export-pdf"),
   savePDF: (buffer) => ipcRenderer.invoke("save-pdf", buffer),
+  exportExcel: (sheetName, headers, rows, defaultPath) =>
+    ipcRenderer.invoke("export-excel", {
+      sheetName,
+      headers,
+      rows,
+      defaultPath,
+    }),
 });

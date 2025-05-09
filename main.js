@@ -2,6 +2,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const ExcelJS = require("exceljs");
 
 // Start the internal API server
 require("./api/server.js");
@@ -56,6 +57,32 @@ ipcMain.handle("save-pdf", async (_event, pdfBuffer) => {
   return { saved: false };
 });
 
+ipcMain.handle(
+  "export-excel",
+  async (event, { sheetName, headers, rows, defaultPath }) => {
+    // 1) Ask the user where to save
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: "حفظ كملف Excel",
+      defaultPath: defaultPath || `${sheetName}.xlsx`,
+      filters: [{ name: "Excel Workbook", extensions: ["xlsx"] }],
+    });
+    if (canceled || !filePath) return { canceled: true };
+
+    // 2) Build workbook
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet(sheetName);
+
+    // 3) Add header row
+    ws.addRow(headers);
+
+    // 4) Add your data rows
+    rows.forEach((r) => ws.addRow(r));
+
+    // 5) Write to disk
+    await wb.xlsx.writeFile(filePath);
+    return { canceled: false, filePath };
+  }
+);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

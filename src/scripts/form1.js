@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button
             type="button"
             data-index="${idx}"
-            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2"
+            class="bg-red-500 text-white px-4 py-2 rounded mt-2 mr-2 cursor-pointer"
           >
             حذف
           </button>

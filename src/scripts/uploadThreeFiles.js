@@ -5,6 +5,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") === "comp" ? "comp" : "base";
 
+  // 0) dynamic check chosen files
+  const bsInput = document.getElementById("file-bs");
+  const bsNameSpan = document.getElementById("file-bs-name");
+  bsInput.addEventListener("change", function () {
+    const fileName = this.files[0]?.name || "No file chosen";
+    bsNameSpan.textContent = `${fileName} Added`;
+  });
+
+  const isInput = document.getElementById("file-is");
+  const isNameSpan = document.getElementById("file-is-name");
+  isInput.addEventListener("change", function () {
+    const fileName = this.files[0]?.name || "No file chosen";
+    isNameSpan.textContent = `${fileName} Added`;
+  });
+
+  const cfInput = document.getElementById("file-cf");
+  const cfNameSpan = document.getElementById("file-cf-name");
+  cfInput.addEventListener("change", function () {
+    const fileName = this.files[0]?.name || "No file chosen";
+    cfNameSpan.textContent = `${fileName} Added`;
+  });
+
   // 1) Load settings
   const settings = JSON.parse(
     localStorage.getItem("comparisonSettings") || "null"

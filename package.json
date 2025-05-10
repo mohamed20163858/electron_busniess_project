@@ -17,8 +17,10 @@
   },
   "build": {
     "appId": "com.example.businessanalysis",
+    "productName": "Fin Analyzer",
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/icon.ico"
     },
     "files": [
       "**/*"

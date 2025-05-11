@@ -48,17 +48,18 @@
 
   // static fields first
   const staticFields = {
-    totalAssets: "اجمالي الأصول",
-    totalDebits: "اجمالي الالتزمات",
-    currentAssets: "الأصول المتداولة",
-    currentDebits: "الالتزامات المتداولة",
+    // النقديه اولا من قايمة التدفقات
+    netCashFlowAndSimilar: "النقدية وما في حكمها",
     inventory: "المخزون",
-    totalContributersRights: "اجمالي حقوق الملكية",
-    totalFixedAssets: "اجمالي الأصول الثابتة",
     clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
+    currentAssets: "الأصول المتداولة",
+    totalFixedAssets: "اجمالي الأصول الثابتة",
+    totalAssets: "اجمالي الأصول",
     creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
+    currentDebits: "الالتزامات المتداولة",
+    totalDebits: "اجمالي الالتزمات",
+    totalContributersRights: "اجمالي حقوق الملكية",
   };
-
   for (let [key, label] of Object.entries(staticFields)) {
     const val = statics[key];
     if (val == null || val === "") continue;

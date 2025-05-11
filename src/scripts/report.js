@@ -26,10 +26,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const exportBtn = document.getElementById("export-btn");
   // gather buckets & titles (same as before) …
   function buildSections(report) {
+    // Titles in Arabic
     const titles = {
-      debt: "نسب المديونية",
       liquidity: "نسب السيولة",
-      activity: "نسب النشاط",
+      activity: "نسب كفاءة النشاط",
+      debt: "نسب الهيكل المالي (المديونية)",
       profitability: "نسب الربحية",
     };
     // reuse your bucket logic …
@@ -46,14 +47,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       .forEach((k) => {
         const n = idx(k);
         // console.log(k, n);
-        if (n <= 6) buckets.debt.push(k);
-        else if (n <= 15) buckets.liquidity.push(k);
-        else if (n <= 27) buckets.activity.push(k);
+        if (n <= 7) buckets.debt.push(k);
+        else if (n <= 16) buckets.liquidity.push(k);
+        else if (n <= 28) buckets.activity.push(k);
         else buckets.profitability.push(k);
       });
 
     const sections = [];
-    for (let cat of ["debt", "liquidity", "activity", "profitability"]) {
+    for (let cat of ["liquidity", "activity", "debt", "profitability"]) {
       if (!buckets[cat].length) continue;
       const rows = buckets[cat].map((key) => {
         const r1 = report.base[key] || {};

@@ -49,7 +49,11 @@
   // static fields first
   const staticFields = {
     netOperatingCashFlow: "صافي التدفقات النقدية التشغيلية",
-    netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
+    meta1: "صافي التدفقات النقدية الاستثمارية",
+    meta2: "صافي التدفقات النقدية التمويلية",
+    meta3: "التغير في التدفقات النقدية",
+    // to be added in balance sheet instead of here
+    // netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
   };
 
   for (let [key, label] of Object.entries(staticFields)) {

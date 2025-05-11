@@ -71,24 +71,31 @@
   const all = Array.from(
     new Set([...Object.keys(base), ...Object.keys(comparison)])
   ).filter((k) => base[k]?.label || comparison[k]?.label);
-  const buckets = { debt: [], liquidity: [], activity: [], profitability: [] };
+  // Bucket them
+  const buckets = {
+    liquidity: [], // 7–15
+    activity: [], // 16–27
+    debt: [], // 1–6
+    profitability: [], // 28+
+  };
   all.forEach((k) => {
     const n = idx(k);
-    if (n >= 1 && n <= 6) buckets.debt.push(k);
-    else if (n >= 7 && n <= 15) buckets.liquidity.push(k);
-    else if (n >= 16 && n <= 27) buckets.activity.push(k);
-    else if (n >= 28) buckets.profitability.push(k);
+    if (n >= 1 && n <= 7) buckets.debt.push(k);
+    else if (n >= 8 && n <= 16) buckets.liquidity.push(k);
+    else if (n >= 17 && n <= 28) buckets.activity.push(k);
+    else if (n >= 29) buckets.profitability.push(k);
   });
+  // Titles in Arabic
   const titles = {
-    debt: "نسب المديونية",
     liquidity: "نسب السيولة",
-    activity: "نسب النشاط",
+    activity: "نسب كفاءة النشاط",
+    debt: "نسب الهيكل المالي (المديونية)",
     profitability: "نسب الربحية",
   };
 
   // 6) Render subtables
   let html = "";
-  for (let section of ["debt", "liquidity", "activity", "profitability"]) {
+  for (let section of ["liquidity", "activity", "debt", "profitability"]) {
     const keys = buckets[section];
     if (!keys.length) continue;
     html += `<h2 class="text-xl font-semibold mt-4 mb-2">${titles[section]}</h2>`;

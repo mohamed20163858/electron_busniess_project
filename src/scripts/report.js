@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .filter((k) => report.base[k]?.label || report.comparison[k]?.label)
       .forEach((k) => {
         const n = idx(k);
+        // console.log(k, n);
         if (n <= 6) buckets.debt.push(k);
         else if (n <= 15) buckets.liquidity.push(k);
         else if (n <= 27) buckets.activity.push(k);
@@ -142,25 +143,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Bucket them
     const buckets = {
-      debt: [], // 1–6
       liquidity: [], // 7–15
       activity: [], // 16–27
+      debt: [], // 1–6
       profitability: [], // 28+
     };
 
     allKeys.forEach((key) => {
       const n = idx(key);
-      if (n >= 1 && n <= 6) buckets.debt.push(key);
-      else if (n >= 7 && n <= 15) buckets.liquidity.push(key);
-      else if (n >= 16 && n <= 27) buckets.activity.push(key);
-      else if (n >= 28) buckets.profitability.push(key);
+      if (n >= 1 && n <= 7) buckets.debt.push(key);
+      else if (n >= 8 && n <= 16) buckets.liquidity.push(key);
+      else if (n >= 17 && n <= 28) buckets.activity.push(key);
+      else if (n >= 29) buckets.profitability.push(key);
     });
 
     // Titles in Arabic
     const titles = {
-      debt: "نسب المديونية",
       liquidity: "نسب السيولة",
-      activity: "نسب النشاط",
+      activity: "نسب كفاءة النشاط",
+      debt: "نسب الهيكل المالي (المديونية)",
       profitability: "نسب الربحية",
     };
 

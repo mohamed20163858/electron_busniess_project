@@ -18,14 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4) Static fields
   const staticFields = {
+    netSell: "صافي المبيعات",
+    futureNetSales: " المبيعات الآجلة",
+    costSales: "تكلفة المبيعات",
+    totalProfit: "مجمل الربح",
+    rent: "الإيجار",
+    fixedCommitments: "المصروفات الثابتة",
     operatingProfit: "الربح التشغيلي",
     benefit: "الفائدة",
-    rent: "الإيجار",
-    fixedCommitments: "الالتزامات الثابتة",
-    netSell: "صافي المبيعات",
-    futureNetSales: "صافي المبيعات الآجلة",
-    costSales: "تكلفة المبيعات",
-    totalProfit: "إجمالي الربح",
     netYearProfit: "صافي الربح السنوي",
   };
 

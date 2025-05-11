@@ -16,15 +16,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4) Static fields
   const staticFields = {
-    totalAssets: "اجمالي الأصول",
-    totalDebits: "اجمالي الالتزمات",
-    currentAssets: "الأصول المتداولة",
-    currentDebits: "الالتزامات المتداولة",
+    // النقديه اولا من قايمة التدفقات
     inventory: "المخزون",
-    totalContributersRights: "اجمالي حقوق الملكية",
-    totalFixedAssets: "اجمالي الأصول الثابتة",
     clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
+    currentAssets: "الأصول المتداولة",
+    totalFixedAssets: "اجمالي الأصول الثابتة",
+    totalAssets: "اجمالي الأصول",
     creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
+    currentDebits: "الالتزامات المتداولة",
+    totalDebits: "اجمالي الالتزمات",
+    totalContributersRights: "اجمالي حقوق الملكية",
   };
 
   // 5) State

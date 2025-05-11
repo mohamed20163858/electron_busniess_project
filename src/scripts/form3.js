@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3) Static fields definition
   const staticFields = {
     netOperatingCashFlow: "صافي التدفقات النقدية التشغيلية",
+    meta1: "صافي التدفقات النقدية الاستثمارية",
+    meta2: "صافي التدفقات النقدية التمويلية",
+    meta3: "التغير في التدفقات النقدية",
+    // to be added in balance sheet instead of here
     netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
   };
 

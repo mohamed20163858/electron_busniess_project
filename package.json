@@ -18,12 +18,17 @@
   "build": {
     "appId": "com.example.businessanalysis",
     "productName": "Fin Analyzer",
+    "directories": {
+      "buildResources": "assests"
+    },
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assests/myLogo.ico"
     },
     "files": [
-      "**/*"
+      "**/*",
+      "assests/**/*.png",
+      "assests/**/*.jpg"
     ]
   },
   "devDependencies": {
@@ -41,5 +46,8 @@
     "sqlite3": "^5.1.7",
     "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.5"
+  },
+  "resolutions": {
+    "@parcel/watcher": "2.1.0"
   }
 }

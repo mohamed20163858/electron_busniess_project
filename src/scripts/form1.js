@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4) Static fields
   const staticFields = {
     // النقديه اولا من قايمة التدفقات
+    netCashFlowAndSimilar: "النقدية وما في حكمها",
     inventory: "المخزون",
     clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
     currentAssets: "الأصول المتداولة",

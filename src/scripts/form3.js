@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     meta2: "صافي التدفقات النقدية التمويلية",
     meta3: "التغير في التدفقات النقدية",
     // to be added in balance sheet instead of here
-    netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
+    // netCashFlowAndSimilar: "صافي التدفقات النقدية وما في حكمها",
   };
 
   // 4) State

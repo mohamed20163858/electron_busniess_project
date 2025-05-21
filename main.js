@@ -6,8 +6,53 @@ const ExcelJS = require("exceljs");
 
 // Start the internal API server
 require("./api/server.js");
-let mainWindow;
+let mainWindow, loadingWindow;
+let loadingTimeout = null;
+const LOADER_DELAY = 1000; // Show loader after 300ms delay
 
+function updateLoadingWindowSize() {
+  if (!loadingWindow || loadingWindow.isDestroyed()) return;
+
+  // Get latest parent dimensions
+  const parentBounds = mainWindow.getBounds();
+
+  // Resize loading window to match parent
+  loadingWindow.setBounds({
+    x: 0,
+    y: 0,
+    width: parentBounds.width,
+    height: parentBounds.height,
+  });
+
+  // Re-center the window (optional but ensures proper positioning)
+  loadingWindow.center();
+}
+
+function createLoadingWindow() {
+  const parentBounds = mainWindow.getBounds();
+
+  loadingWindow = new BrowserWindow({
+    width: parentBounds.width, // Match initial parent width
+    height: parentBounds.height, // Match initial parent height
+    parent: mainWindow, // Center over main window
+    modal: true,
+    show: false,
+    frame: false,
+    transparent: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      sandbox: false,
+    },
+  });
+
+  loadingWindow.loadFile(path.join(__dirname, "src", "loading.html"));
+  // Update loading window size when parent resizes
+  mainWindow.on("resize", updateLoadingWindowSize);
+  mainWindow.on("maximize", updateLoadingWindowSize);
+  mainWindow.on("unmaximize", updateLoadingWindowSize);
+}
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -20,6 +65,30 @@ function createWindow() {
       enableRemoteModule: false,
       sandbox: false,
     },
+  });
+  createLoadingWindow();
+  mainWindow.webContents.on("did-start-loading", () => {
+    // Schedule loader to appear after delay
+    // console.log("start loading");
+    loadingTimeout = setTimeout(() => {
+      if (loadingWindow && !loadingWindow.isDestroyed()) {
+        console.log("Loading window created");
+        loadingWindow.show();
+      }
+    }, LOADER_DELAY);
+  });
+
+  mainWindow.webContents.on("did-stop-loading", () => {
+    // Cancel pending loader display
+    // console.log("stop loading");
+    if (loadingTimeout) {
+      clearTimeout(loadingTimeout);
+      loadingTimeout = null;
+    }
+    // Hide loader if it was shown
+    if (loadingWindow && !loadingWindow.isDestroyed()) {
+      loadingWindow.hide();
+    }
   });
   mainWindow.loadFile(path.join(__dirname, "src", "splash.html"));
 }

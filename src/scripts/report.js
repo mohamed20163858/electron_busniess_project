@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       html += `<h2 class="text-xl font-semibold mt-6 mb-2">${titles[bucketKey]}</h2>`;
       html += `
-        <div class="overflow-x-auto mb-4">
+        <div class="overflow-x-auto mb-4 bg-white text-black font-bold text-[20px] rounded-[5px] p-6  flex justify-center w-full">
           <table class="min-w-full border-collapse">
             <thead>
               <tr>

@@ -6,16 +6,16 @@ const { comments } = require(commentsModulePath);
 const readXlsxFile = require("read-excel-file");
 const ExcelJS = require("exceljs");
 // Inject background image
-document.addEventListener("DOMContentLoaded", () => {
-  const style = document.createElement("style");
-  style.textContent = `
-    body {
-      background-image: url('./assests/background.jpg');
-      background-size: cover;
-    }
-  `;
-  document.head.appendChild(style);
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//   const style = document.createElement("style");
+//   style.textContent = `
+//     body {
+//       background-image: url('./assests/background.jpg');
+//       background-size: cover;
+//     }
+//   `;
+//   document.head.appendChild(style);
+// });
 contextBridge.exposeInMainWorld("myAPI", {
   comments: comments,
 });

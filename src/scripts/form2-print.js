@@ -55,7 +55,7 @@
     costSales: "تكلفة المبيعات",
     totalProfit: "مجمل الربح",
     rent: "الإيجار",
-    fixedCommitments: "المصروفات الثابتة",
+    fixedCommitments: "أعباء ثابتة (مصروفات تدفع شهريا)",
     operatingProfit: "الربح التشغيلي",
     benefit: "الفائدة",
     netYearProfit: "صافي الربح السنوي",

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     netCashFlowAndSimilar: "النقدية وما في حكمها",
     inventory: "المخزون",
     clientsAndOtherDebits: "العملاء وارصده مدينة أخرى",
-    currentAssets: "الأصول المتداولة",
+    currentAssets: "اجمالي الأصول المتداولة",
     totalFixedAssets: "اجمالي الأصول الثابتة",
     totalAssets: "اجمالي الأصول",
     creditorsAndOtherCredits: "دائنون و أرصدة دائنة أخرى",
